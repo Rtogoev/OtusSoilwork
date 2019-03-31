@@ -21,12 +21,13 @@
 # Сборка
 1) Открыть терминал в корне проекта и выполнить команду:
 
-       mvn clean compile assembly:single
+       mvn clean compile assembly:single package
 
 # Запуск
 1) Открыть терминал в корне проекта и выполнить команду:
 
-       java -jar hw01-maven/target/*.jar
+       cd /hw01-maven/target
+       java -cp hw01-maven-1.0-SNAPSHOT-jar-with-dependencies.jar com.HelloOtus
        
 # Об авторе
 
