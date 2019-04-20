@@ -1,22 +1,17 @@
 package com;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class DIYarrayList<T> implements List<T> {
-    /*
-        e*
-        Collections.addAll(Collection<? super T> c, T... elements)
-        Collections.static <T> void copy(List<? super T> dest, List<? extends T> src)
-        Collections.static <T> void sort(List<T> list, Comparator<? super T> c)
-        *
-         *  */
+
     private T[] thisArray;
 
     public DIYarrayList() {
         thisArray = (T[]) new Object[0];
+    }
+
+    public DIYarrayList(int initialCapacity) {
+        thisArray = (T[]) new Object[initialCapacity];
     }
 
     @Override
@@ -51,6 +46,13 @@ public class DIYarrayList<T> implements List<T> {
     public <T1> T1[] toArray(T1[] a) {
         throw new UnsupportedOperationException();
 
+    }
+
+    @Override
+    public String toString() {
+        return "DIYarrayList{" +
+                "thisArray=" + Arrays.toString(thisArray) +
+                '}';
     }
 
     @Override
@@ -157,8 +159,7 @@ public class DIYarrayList<T> implements List<T> {
 
     @Override
     public ListIterator<T> listIterator() {
-        throw new UnsupportedOperationException();
-
+        return new DIYListIterator(0);
     }
 
     @Override
@@ -170,6 +171,66 @@ public class DIYarrayList<T> implements List<T> {
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
         throw new UnsupportedOperationException();
+    }
 
+    private class DIYListIterator implements ListIterator<T> {
+        private int cursor;
+
+        public DIYListIterator(int cursor) {
+            this.cursor = cursor;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public T next() {
+            if (cursor < thisArray.length) {
+                T next = thisArray[cursor];
+                cursor++;
+                return next;
+            }
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return false;
+        }
+
+        @Override
+        public T previous() {
+            return null;
+        }
+
+        @Override
+        public int nextIndex() {
+            return 0;
+        }
+
+        @Override
+        public int previousIndex() {
+            return 0;
+        }
+
+        @Override
+        public void remove() {
+
+        }
+
+        @Override
+        public void set(T t) {
+            if (cursor - 1 < 0) {
+                throw new IllegalStateException();
+            }
+            thisArray[cursor - 1] = t;
+        }
+
+        @Override
+        public void add(T t) {
+
+        }
     }
 }

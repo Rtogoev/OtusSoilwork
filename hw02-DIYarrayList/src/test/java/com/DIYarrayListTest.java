@@ -8,20 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DIYarrayListTest {
     private static final String ZERO_ELEMENT = "0";
     private static List<String> stringList;
-    /*
-            Collections.addAll(Collection<? super T> c, T... elements)
-            Collections.static <T> void copy(List<? super T> dest, List<? extends T> src)
-            Collections.static <T> void sort(List<T> list, Comparator<? super T> c)
-
-        1) Проверяйте на коллекциях с 20 и больше элементами.
-        2) DIYarrayList должен имплементировать ТОЛЬКО ОДИН интерфейс - List.
-        3) Если метод не имплементирован, то он должен выбрасывать исключение UnsupportedOperationException.
-        * */
-    private List<String> stringDIYList;
+    private DIYarrayList<String> stringDIYList;
 
     @BeforeEach
     public void init() {
@@ -45,27 +37,42 @@ class DIYarrayListTest {
 
     @Test
     void isEmpty() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.isEmpty()
+        );
     }
 
     @Test
     void contains() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.contains("1")
+        );
     }
 
     @Test
     void iterator() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.iterator()
+        );
     }
 
     @Test
     void toArray() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.toArray()
+        );
     }
 
     @Test
     void toArray1() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.toArray(new String[]{})
+        );
     }
 
     @Test
@@ -78,12 +85,19 @@ class DIYarrayListTest {
 
     @Test
     void remove() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.remove("1")
+        );
     }
 
     @Test
     void containsAll() {
 
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.containsAll(new ArrayList<>())
+        );
     }
 
     @Test
@@ -102,76 +116,107 @@ class DIYarrayListTest {
 
     @Test
     void addAll_stringDIYLitIsNull() {
-        stringDIYList = new DIYarrayList<>();
         int expectedSizeAfterAddAll = stringList.size();
         stringDIYList.addAll(stringList);
         assertEquals(expectedSizeAfterAddAll, stringDIYList.size());
-        assertEquals(ZERO_ELEMENT, stringDIYList.get(0));
         for (int i = 0; i < stringList.size(); i++) {
-            assertEquals(
-                    String.valueOf(i), stringDIYList.get(i + 1)
-            );
+            assertEquals(String.valueOf(i), stringDIYList.get(i));
         }
-
     }
 
     @Test
     void removeAll() {
 
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.removeAll(new ArrayList<>())
+        );
     }
 
     @Test
     void retainAll() {
 
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.retainAll(new ArrayList<>())
+        );
     }
 
     @Test
     void clear() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.clear()
+        );
     }
 
     @Test
     void get() {
-
+        stringDIYList.add("element");
+        assertEquals("element",stringDIYList.get(0));
     }
 
     @Test
     void set() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.set(0,"1")
+        );
     }
 
     @Test
     void add1() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.add(0,"0")
+        );
     }
 
     @Test
     void remove1() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.remove(1)
+        );
     }
 
     @Test
     void indexOf() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.indexOf("1")
+        );
     }
 
     @Test
     void lastIndexOf() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.lastIndexOf("11")
+        );
     }
 
     @Test
     void listIterator() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.listIterator()
+        );
     }
 
     @Test
     void listIterator1() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.listIterator(9)
+        );
     }
 
     @Test
     void subList() {
-
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stringDIYList.subList(1,3)
+        );
     }
 }
