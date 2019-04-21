@@ -14,6 +14,8 @@ public class CollectionsTest {
     private static List<String> stringList;
     private DIYarrayList<String> stringDIYList;
     private String[] stringArray;
+    private DIYarrayList<String> destinationStringDIYarrayList;
+    private ArrayList<String> stringArrayList;
 
     @BeforeEach
     public void beforeEach() {
@@ -27,6 +29,24 @@ public class CollectionsTest {
         for (int i = 1000; i < 2000; i++) {
             stringArray[i - 1000] = String.valueOf(i);
         }
+        destinationStringDIYarrayList = createEmptyDIYarrayList(1000);
+        stringArrayList = createEmptyArrayList(1000);
+    }
+
+    private DIYarrayList<String> createEmptyDIYarrayList(int size) {
+        DIYarrayList<String> emptyDIYarrayList = new DIYarrayList<>();
+        for (int i = 0; i < size; i++) {
+            emptyDIYarrayList.add(null);
+        }
+        return emptyDIYarrayList;
+    }
+
+    private ArrayList<String> createEmptyArrayList(int size) {
+        ArrayList<String> emptyArrayList = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            emptyArrayList.add(null);
+        }
+        return emptyArrayList;
     }
 
     @Test
@@ -42,7 +62,6 @@ public class CollectionsTest {
 
     @Test
     void copy__DIYArrayList_To_DIYArrayList() {
-        DIYarrayList<String> destinationStringDIYarrayList = new DIYarrayList<>(1000);
         Collections.copy(destinationStringDIYarrayList, stringDIYList);
         assertEquals(destinationStringDIYarrayList.size(), stringDIYList.size());
         for (int i = 0; i < stringDIYList.size(); i++) {
@@ -52,12 +71,6 @@ public class CollectionsTest {
 
     @Test
     void copy__DIYArrayList_To_ArrayList() {
-
-        ArrayList<String> stringArrayList = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
-            stringArrayList.add(null);
-        }
-
         Collections.copy(stringArrayList, stringDIYList);
         assertEquals(stringArrayList.size(), stringDIYList.size());
         for (int i = 0; i < stringDIYList.size(); i++) {
@@ -67,7 +80,6 @@ public class CollectionsTest {
 
     @Test
     void copy___ArrayList_To_DIYArrayList() {
-        DIYarrayList<String> destinationStringDIYarrayList = new DIYarrayList<>(1000);
         Collections.copy(destinationStringDIYarrayList, stringList);
         assertEquals(destinationStringDIYarrayList.size(), stringList.size());
         for (int i = 0; i < stringDIYList.size(); i++) {
