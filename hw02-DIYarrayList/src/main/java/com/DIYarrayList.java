@@ -5,18 +5,15 @@ import java.util.*;
 public class DIYarrayList<T> implements List<T> {
 
     private T[] thisArray;
+    private int size;
 
     public DIYarrayList() {
         thisArray = (T[]) new Object[0];
     }
 
-    public DIYarrayList(int initialCapacity) {
-        thisArray = (T[]) new Object[initialCapacity];
-    }
-
     @Override
     public int size() {
-        return thisArray.length;
+        return size;
     }
 
     @Override
@@ -57,17 +54,24 @@ public class DIYarrayList<T> implements List<T> {
 
     @Override
     public boolean add(T t) {
+        int bucket = 15;
         if (thisArray == null || thisArray.length == 0) {
-            thisArray = (T[]) new Object[1];
+            thisArray = (T[]) new Object[bucket];
             thisArray[0] = t;
+            size++;
             return true;
         }
-        T[] newArray = (T[]) new Object[1 + thisArray.length];
-        for (int i = 0; i < thisArray.length; i++) {
-            newArray[i] = thisArray[i];
+        if (size == thisArray.length) {
+            T[] newArray = (T[]) new Object[bucket + thisArray.length];
+            for (int i = 0; i < thisArray.length; i++) {
+                newArray[i] = thisArray[i];
+            }
+            newArray[thisArray.length] = t;
+            thisArray = newArray;
+        } else {
+            thisArray[size] = t;
         }
-        newArray[newArray.length - 1] = t;
-        thisArray = newArray;
+        size++;
         return true;
     }
 
@@ -89,13 +93,14 @@ public class DIYarrayList<T> implements List<T> {
             return false;
         }
         T[] cArray = (T[]) c.toArray();
-        T[] newArray = (T[]) new Object[c.size() + thisArray.length];
-        for (int i = 0; i < thisArray.length; i++) {
+        T[] newArray = (T[]) new Object[c.size() + size];
+        for (int i = 0; i < size; i++) {
             newArray[i] = thisArray[i];
         }
         for (int i = 0; i < c.size(); i++) {
-            newArray[i + thisArray.length] = cArray[i];
+            newArray[i + size] = cArray[i];
         }
+        size = size + c.size();
         thisArray = newArray;
         return true;
     }
@@ -126,7 +131,9 @@ public class DIYarrayList<T> implements List<T> {
 
     @Override
     public T get(int index) {
-        return thisArray[index];
+        if (index < size)
+            return thisArray[index];
+        throw new IndexOutOfBoundsException();
     }
 
     @Override
