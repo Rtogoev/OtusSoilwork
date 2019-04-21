@@ -116,11 +116,11 @@ class DIYarrayListTest {
 
     @Test
     void addAll_stringDIYLitIsNull() {
-        int expectedSizeAfterAddAll = stringList.size();
+        int expectedSize = stringList.size();
         stringDIYList.addAll(stringList);
-        assertEquals(expectedSizeAfterAddAll, stringDIYList.size());
+        assertEquals(expectedSize, stringDIYList.size());
         for (int i = 0; i < stringList.size(); i++) {
-            assertEquals(String.valueOf(i), stringDIYList.get(i));
+            assertEquals(stringList.get(i), stringDIYList.get(i));
         }
     }
 
@@ -198,10 +198,7 @@ class DIYarrayListTest {
 
     @Test
     void listIterator() {
-        assertThrows(
-                UnsupportedOperationException.class,
-                () -> stringDIYList.listIterator()
-        );
+        new DIYarrayList<>().listIterator();
     }
 
     @Test
