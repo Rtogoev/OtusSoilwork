@@ -1,4 +1,4 @@
-package com;
+package ru.otus.homework;
 
 
 import org.junit.jupiter.api.BeforeEach;
@@ -215,5 +215,13 @@ class DIYarrayListTest {
                 UnsupportedOperationException.class,
                 () -> stringDIYList.subList(1,3)
         );
+    }
+
+    @Test
+    void test_toString() {
+        DIYarrayList<String> test=  new DIYarrayList<>();
+        test.add("1");
+        test.add("2");
+        assertEquals("DIYarrayList{thisArray=[1,2]}",test.toString());
     }
 }

@@ -1,14 +1,18 @@
-package com;
+package ru.otus.homework;
 
 import java.util.*;
 
 public class DIYarrayList<T> implements List<T> {
-
+    private static final int BUCKET = 15;
     private T[] thisArray;
     private int size;
 
     public DIYarrayList() {
         thisArray = (T[]) new Object[0];
+    }
+
+    public DIYarrayList(int initialCapacity) {
+        thisArray = (T[]) new Object[initialCapacity];
     }
 
     @Override
@@ -48,31 +52,42 @@ public class DIYarrayList<T> implements List<T> {
     @Override
     public String toString() {
         return "DIYarrayList{" +
-                "thisArray=" + Arrays.toString(thisArray) +
+                "thisArray=" + getFilledArrayString() +
                 '}';
+    }
+
+    private String getFilledArrayString() {
+        if (size == 0 || thisArray == null) {
+            return "[]";
+        }
+        String filledArrayString = "[" + thisArray[0];
+        for (int i = 1; i < size; i++) {
+            filledArrayString = filledArrayString + "," + thisArray[i];
+        }
+        filledArrayString = filledArrayString + "]";
+        return filledArrayString;
     }
 
     @Override
     public boolean add(T t) {
-        int bucket = 15;
+        boostThisArray();
+        thisArray[size] = t;
+        size++;
+        return true;
+    }
+
+    private void boostThisArray() {
         if (thisArray == null || thisArray.length == 0) {
-            thisArray = (T[]) new Object[bucket];
-            thisArray[0] = t;
-            size++;
-            return true;
+            thisArray = (T[]) new Object[BUCKET];
+            return;
         }
         if (size == thisArray.length) {
-            T[] newArray = (T[]) new Object[bucket + thisArray.length];
+            T[] newArray = (T[]) new Object[BUCKET + thisArray.length];
             for (int i = 0; i < thisArray.length; i++) {
                 newArray[i] = thisArray[i];
             }
-            newArray[thisArray.length] = t;
             thisArray = newArray;
-        } else {
-            thisArray[size] = t;
         }
-        size++;
-        return true;
     }
 
     @Override
