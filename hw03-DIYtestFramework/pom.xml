@@ -10,6 +10,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>Otus</groupId>
     <artifactId>hw03-DIYtestFramework</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
