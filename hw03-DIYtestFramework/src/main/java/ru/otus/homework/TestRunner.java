@@ -5,7 +5,7 @@ public class TestRunner {
         new TestRunner().run(AnnotationsTest.class);
     }
 
-    public void run(Class<AnnotationsTest> testClass) throws IllegalAccessException, InstantiationException {
+    public static void run(Class<AnnotationsTest> testClass) throws IllegalAccessException, InstantiationException {
         TestService.createTestSequence(testClass);
         TestService.executeTestSequence(testClass.newInstance());
     }
