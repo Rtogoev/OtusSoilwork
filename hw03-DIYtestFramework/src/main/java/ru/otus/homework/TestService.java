@@ -35,7 +35,7 @@ public class TestService {
 
     }
 
-    public static void executeTestSequence(Object testClass) {
+    public static void executeTestSequence(Class<?> testClass) throws IllegalAccessException, InstantiationException {
         testSequenceMap.get(BeforeAll.class).forEach(
                 beforeAllMethod -> {
                     try {
@@ -45,26 +45,31 @@ public class TestService {
                     }
                 }
         );
-
+        final Object[] testClassInstanse = new Object[1];
         testSequenceMap.get(Test.class).forEach(
                 testMethod -> {
+                    try {
+                        testClassInstanse[0] = testClass.newInstance();
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     testSequenceMap.get(BeforeEach.class).forEach(beforeEachMethod -> {
                         try {
-                            beforeEachMethod.invoke(testClass);
+                            beforeEachMethod.invoke(testClassInstanse[0]);
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();
                         }
                     });
 
                     try {
-                        testMethod.invoke(testClass);
+                        testMethod.invoke(testClassInstanse[0]);
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
 
                     testSequenceMap.get(AfterEach.class).forEach(afterEachMethod -> {
                         try {
-                            afterEachMethod.invoke(testClass);
+                            afterEachMethod.invoke(testClassInstanse[0]);
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();
                         }
