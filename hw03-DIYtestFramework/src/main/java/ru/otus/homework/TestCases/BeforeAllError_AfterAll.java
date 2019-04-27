@@ -1,9 +1,9 @@
-package ru.otus.homework;
+package ru.otus.homework.TestCases;
 
 import ru.otus.homework.annotations.*;
 
-class AnnotationsTest {
-    AnnotationsTest() throws Exception {
+public class BeforeAllError_AfterAll {
+    BeforeAllError_AfterAll() {
         System.out.println("Call of the constructor");
     }
 
@@ -14,9 +14,8 @@ class AnnotationsTest {
     }
 
     @AfterAll
-    static void afterAll() throws Exception {
+    static void afterAll() {
         System.out.println("AfterAll");
-        throw new Exception();
     }
 
     @BeforeEach
@@ -57,13 +56,13 @@ class AnnotationsTest {
 
     @AfterEach
     void afterEach1() throws Exception {
-        System.out.println("AfterEach");
+        System.out.println("AfterEach1");
         throw new Exception();
     }
 
     @AfterEach
     void afterEach2() throws Exception {
-        System.out.println("AfterEach");
+        System.out.println("AfterEach2");
         throw new Exception();
     }
 }

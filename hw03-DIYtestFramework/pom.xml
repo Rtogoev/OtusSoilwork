@@ -10,6 +10,14 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+    </dependencies>
+
     <groupId>Otus</groupId>
     <artifactId>hw03-DIYtestFramework</artifactId>
     <version>1.0-SNAPSHOT</version>
