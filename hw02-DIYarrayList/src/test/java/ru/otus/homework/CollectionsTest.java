@@ -30,7 +30,7 @@ public class CollectionsTest {
             stringArray[i - 1000] = String.valueOf(i);
         }
         destinationStringDIYarrayList = createEmptyDIYarrayList(1000);
-        stringArrayList = createEmptyArrayList(1000);
+        stringArrayList = createEmptyArrayList();
     }
 
     private DIYarrayList<String> createEmptyDIYarrayList(int size) {
@@ -41,7 +41,7 @@ public class CollectionsTest {
         return emptyDIYarrayList;
     }
 
-    private ArrayList<String> createEmptyArrayList(int size) {
+    private ArrayList<String> createEmptyArrayList() {
         ArrayList<String> emptyArrayList = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
             emptyArrayList.add(null);
