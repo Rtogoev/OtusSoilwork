@@ -8,12 +8,13 @@ import java.lang.reflect.Proxy;
 
 public class Main {
     public static void main(String[] args) {
-        (
-                (MyClassInterface) Proxy.newProxyInstance(
+        MyClassInterface myClass = (MyClassInterface) Proxy.newProxyInstance(
                         Main.class.getClassLoader(),
                         new Class<?>[]{MyClassInterface.class},
                         new MyHandler(new MyClassImpl())
-                )
-        ).method(1, 2);
+        );
+
+        myClass.method(1);
+        myClass.methodForLog(1,2);
     }
 }

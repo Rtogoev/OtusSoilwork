@@ -1,5 +1,10 @@
 package ru.otus.homework.MyClass;
 
+import ru.otus.homework.annotations.Log;
+
 public interface MyClassInterface {
-    void method(int a, int b);
+    @Log
+    void methodForLog(int a, int b);
+
+    void method(int a);
 }

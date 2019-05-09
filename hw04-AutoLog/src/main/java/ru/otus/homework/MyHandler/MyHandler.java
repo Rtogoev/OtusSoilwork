@@ -1,6 +1,7 @@
 package ru.otus.homework.MyHandler;
 
 import ru.otus.homework.MyClass.MyClassInterface;
+import ru.otus.homework.annotations.Log;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -15,14 +16,16 @@ public class MyHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.println(
-                "executed method: " +
-                        method.getName() +
-                        ", params: " +
-                        Arrays.toString(args)
-                                .replaceAll("\\[","")
-                                .replaceAll("\\]","")
-        );
+        if (method.getAnnotation(Log.class) != null) {
+            System.out.println(
+                    "executed method: " +
+                            method.getName() +
+                            ", params: " +
+                            Arrays.toString(args)
+                                    .replaceAll("\\[", "")
+                                    .replaceAll("\\]", "")
+            );
+        }
         return method.invoke(myClass, args);
     }
 }
