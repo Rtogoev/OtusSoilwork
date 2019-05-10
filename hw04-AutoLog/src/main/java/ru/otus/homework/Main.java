@@ -15,6 +15,8 @@ public class Main {
         );
 
         myClass.method(1);
-        myClass.methodForLog(1,2);
+        myClass.methodForLog(2,3);
+        myClass.methodForLog(4);
+        myClass.methodForLog("5");
     }
 }
