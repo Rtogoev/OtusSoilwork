@@ -12,6 +12,7 @@
         <module>hw01-maven</module>
         <module>hw02-DIYarrayList</module>
         <module>hw03-DIYtestFramework</module>
+        <module>hw04-AutoLog</module>
     </modules>
 
     <properties>
