@@ -1,28 +1,37 @@
 package ru.otus.homework;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class ATM {
 
-    Map<Integer, Integer> buckets = new TreeMap();
+    Map<Integer, Integer> buckets = new HashMap<>();
 
-    public void cashIn(Cash cash) {
-        Integer cashInNominal = cash.getNominal();
-        Integer cashInAmount = cash.getAmount();
-        Integer currentAmount = buckets.get(cashInNominal);
-        buckets.put(
-                cashInNominal,
-                currentAmount + cashInAmount
-        );
+    public int cashIn(Cash cash) {
+        int cashInNominal = cash.getNominal();
+        int cashInAmount = cash.getAmount();
+        buckets.merge(cashInNominal, cashInAmount, Integer::sum);
+        return cashInAmount * cashInNominal;
     }
 
-    public Cash cashOut(Integer money) throws CashOutErrorException {
-        Cash cashOut = null;
-//        buckets.keySet().forEach(nominal -> nominal);
-        if (cashOut == null) {
+    public List<Cash> cashOut(int money) throws CashOutErrorException {
+        List<Cash> cashOut = new LinkedList<>();
+
+        Set<Integer> nominates = new HashSet(buckets.keySet());
+        while (nominates.size() != 0 && money != 0) {
+            int nominalMax = Collections.max(nominates);
+            nominates.remove(nominalMax);
+            int banknotes = money / nominalMax;
+            if (banknotes == 0) {
+                continue;
+            }
+            money = money - banknotes * nominalMax;
+            cashOut.add(new Cash(nominalMax, banknotes));
+        }
+
+        if (money != 0) {
             throw new CashOutErrorException();
         }
+
         return cashOut;
     }
 
