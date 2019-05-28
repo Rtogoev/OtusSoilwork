@@ -13,6 +13,7 @@
         <module>hw02-DIYarrayList</module>
         <module>hw03-DIYtestFramework</module>
         <module>hw04-AutoLog</module>
+        <module>hw06-ATM</module>
     </modules>
 
     <properties>
