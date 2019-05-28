@@ -36,7 +36,7 @@ class ATMTest {
     }
 
     @Test
-    void cashOut_SUCCESS() throws CashOutErrorException {
+    void cashOut_SUCCESS() throws CashOutException {
         List<Cash> expectedCashOut = new LinkedList<>();
         expectedCashOut.add(new Cash(1000, 1));
 
@@ -59,7 +59,7 @@ class ATMTest {
     void cashOut_FAILURE_1() {
         atm.cashIn(new Cash(10, 1));
         assertThrows(
-                CashOutErrorException.class, () -> atm.cashOut(1)
+                CashOutException.class, () -> atm.cashOut(1)
         );
     }
 
@@ -67,7 +67,7 @@ class ATMTest {
     void cashOut_FAILURE_2() {
         atm.cashIn(new Cash(10, 1));
         assertThrows(
-                CashOutErrorException.class, () -> atm.cashOut(20)
+                CashOutException.class, () -> atm.cashOut(20)
         );
     }
 
