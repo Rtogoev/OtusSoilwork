@@ -9,8 +9,6 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.util.List;
 
 public class GCMonitoringService {
-    private static final CharSequence OLD = "Old";
-    private static final CharSequence YOUNG = "Young";
     private static long lengthOld = 0;
     private static long countOld = 0;
     private static long lengthYoung = 0;
@@ -20,7 +18,7 @@ public class GCMonitoringService {
         // disable creation
     }
 
-    public static void switchOnMonitoring() {
+    public static void switchOnMonitoring(String old,String young) {
         List<GarbageCollectorMXBean> gcbeans = java.lang.management.ManagementFactory.getGarbageCollectorMXBeans();
         for (GarbageCollectorMXBean gcbean : gcbeans) {
             System.out.println("GC name:" + gcbean.getName());
@@ -29,11 +27,11 @@ public class GCMonitoringService {
                 if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
                     GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
                     String gcName = gcbean.getName();
-                    if (gcName.contains(OLD)) {
+                    if (gcName.contains(old)) {
                         lengthOld = lengthOld + info.getGcInfo().getDuration();
                         countOld = countOld + 1;
                     }
-                    if (gcName.contains(YOUNG)) {
+                    if (gcName.contains(young)) {
                         lengthYoung = lengthYoung + info.getGcInfo().getDuration();
                         countYoung = countYoung + 1;
                     }

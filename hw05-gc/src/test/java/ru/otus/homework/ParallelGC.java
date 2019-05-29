@@ -1,51 +1,77 @@
 package ru.otus.homework;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.junit.jupiter.api.Test;
 
-/*
--Xms512m
-        -Xmx512m
-        -XX:+UseG1GC
-        */
-
-/*
-1)
-    default, time: 83 sec (82 without Label_1)
-2)
-    -XX:MaxGCPauseMillis=100000, time: 82 sec //Sets a target for the maximum GC pause time.
-3)
-    -XX:MaxGCPauseMillis=10, time: 91 sec
-
-4)
--Xms2048m
--Xmx2048m
-    time: 81 sec
-
-5)
--Xms5120m
--Xmx5120m
-    time: 80 sec
-
-5)
--Xms20480m
--Xmx20480m
-    time: 81 sec (72 without Label_1)
-
-*/
 public class ParallelGC {
-    private static List<Integer> integerList = new LinkedList<>();
+    /**
+     * -Xms512m
+     * -Xmx512m
+     * -XX:+UseParallelGC
+     * Нагрузка на память растет примерно по 5-10 мегабайт в секунду или две
+     * Количество сборок:  Young - 3 Old - 8;  Время, затраченное на сборки: Young - 1245 Old - 11276
+     */
 
-    public static void main(String[] args) throws InterruptedException {
-        GCMonitoringService.switchOnMonitoring();
-        while (true) {
-            for (int i = 0; i < 250; i++) {
-                integerList.add(i);
-            }
-            for (int i = 0; i < 50; i++) {
-                integerList.remove(0);
-            }
-            Thread.sleep(1);
-        }
+    /*
+     *
+     * -Xms512m
+     * -Xmx512m
+     * -XX:+UseParallelGC
+     * -XX:MaxGCPauseMillis=100000
+     * Нагрузка на память растет примерно по 5-10 мегабайт в секунду или две первые 2 минуты,
+     * затем проц начинает гореть и память растет всплесками по 50 мб, каждые 15-20 секунд
+     * Количество сборок:  Young - 3 Old - 9;  Время, затраченное на сборки: Young - 1315 Old - 12891
+     */
+
+    /*
+     *
+     * -Xms512m
+     * -Xmx512m
+     * -XX:+UseParallelGC
+     * -XX:MaxGCPauseMillis=10
+     * Нагрузка на память растет примерно по 5-10 мегабайт в секунду или две первые 2 минуты,
+     * затем проц начинает гореть и память растет всплесками по 50 мб, каждые 15-20 секунд
+     * Количество сборок:  Young - 3 Old - 9;  Время, затраченное на сборки: Young - 1325 Old - 13036
+     *
+     */
+
+    /*
+     *
+     * -Xms2048m
+     * -Xmx2048m
+     * -XX:+UseParallelGC
+     * Пришлось выставить sleepMillis =0, иначе нагрузка на память отсутствует.
+     * за 10 секунд прошло 3 Young затем проц начал гореть. приложение работало почти 15 минут
+     *  и на пиковой нагрузке неожиданно начался её спад (примерно -200 мб). Выключил сам
+     * Количество сборок:  Young - 3 Old - 6;  Время, затраченное на сборки: Young - 4456 Old - 31511
+     */
+
+    /*
+     *
+     * -Xms5120m
+     * -Xmx5120m
+     * -XX:+UseParallelGC
+     * Пришлось выставить sleepMillis =0, иначе нагрузка на память отсутствует.
+     * за 10 секунд прошло 3 Young затем проц начал гореть. приложение работало почти 15 минут
+     *  и на пиковой нагрузке неожиданно начался её спад (примерно -200 мб). Выключил сам
+     * Количество сборок:  Young - 3 Old - 6;  Время, затраченное на сборки: Young - 11500 Old - 77992
+     *
+     */
+
+    /*
+     *
+     * -Xms20480m
+     * -Xmx20480m
+     * -XX:+UseParallelGC
+     * здесь комп умер
+     */
+    @Test
+    public void ParallelGCTest() throws InterruptedException {
+        GcStatisticService.createStatistic(
+                250,
+                50,
+                0,
+                "MarkSweep",
+                "Scavenge"
+        );
     }
 }

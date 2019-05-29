@@ -2,7 +2,7 @@ package ru.otus.homework;
 
 import org.junit.jupiter.api.Test;
 
-class GC1Test {
+class GC1 {
 
     /**
      *
@@ -78,11 +78,13 @@ class GC1Test {
      * /
 */
     @Test
-    public void GC1Test_1() throws InterruptedException {
+    public void GC1Test() throws InterruptedException {
         GcStatisticService.createStatistic(
                         250,
                         50,
-                        1
+                        1,
+                "Old",
+                "Young"
                 );
     }
 }
