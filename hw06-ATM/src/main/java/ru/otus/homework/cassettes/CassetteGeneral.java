@@ -8,7 +8,7 @@ import java.util.List;
 
 public abstract class CassetteGeneral implements Cassette {
 
-    private static final List<Banknote> banknotes = new LinkedList<>();
+    protected List<Banknote> banknotes = new LinkedList<>();
 
     @Override
     public abstract Nominal getNominal();

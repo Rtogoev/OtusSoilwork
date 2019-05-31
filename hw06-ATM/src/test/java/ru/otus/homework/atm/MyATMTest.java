@@ -16,10 +16,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MyATMTest {
-    private static int amountBanknoteRub10 = 10;
-    private static int amountBanknoteRub50 = 50;
-    private static int amountBanknoteRub100 = 100;
-    private static int amountBanknoteRub1000 = 1000;
+    private static int amountBanknoteRub10 = 12;
+    private static int amountBanknoteRub50 = 64;
+    private static int amountBanknoteRub100 = 23;
+    private static int amountBanknoteRub1000 = 734;
     private MyATM myATM;
     private List<Banknote> banknotesCashIn;
     private List<Banknote> banknotesCashOut;
@@ -43,14 +43,14 @@ class MyATMTest {
         }
 
         for (int i = 0; i < amountBanknoteRub1000; i++) {
-            banknotesCashIn.add(new BanknoteRub100());
+            banknotesCashIn.add(new BanknoteRub1000());
         }
         banknotesCashOut.addAll(banknotesCashIn);
         expectedSum =
-                amountBanknoteRub10 * Rub10.getDenomination() +
-                        amountBanknoteRub50 * Rub50.getDenomination() +
-                        amountBanknoteRub100 * Rub100.getDenomination() +
-                        amountBanknoteRub1000 * Rub1000.getDenomination();
+                amountBanknoteRub10 * new Rub10().getDenomination() +
+                        amountBanknoteRub50 * new Rub50().getDenomination() +
+                        amountBanknoteRub100 * new Rub100().getDenomination() +
+                        amountBanknoteRub1000 * new Rub1000().getDenomination();
     }
 
     @Test
@@ -60,6 +60,47 @@ class MyATMTest {
                 myATM.cashIn(banknotesCashIn)
         );
     }
+
+    @Test
+    void cashIn_10() {
+        List<Banknote> banknoteRub10 = new ArrayList<>();
+        banknoteRub10.add(new BanknoteRub10());
+        assertEquals(
+                10,
+                myATM.cashIn(banknoteRub10)
+        );
+    }
+
+    @Test
+    void cashIn_50() {
+        List<Banknote> banknoteRub50 = new ArrayList<>();
+        banknoteRub50.add(new BanknoteRub50());
+        assertEquals(
+                50,
+                myATM.cashIn(banknoteRub50)
+        );
+    }
+
+    @Test
+    void cashIn_100() {
+        List<Banknote> banknoteRub100 = new ArrayList<>();
+        banknoteRub100.add(new BanknoteRub100());
+        assertEquals(
+                100,
+                myATM.cashIn(banknoteRub100)
+        );
+    }
+
+    @Test
+    void cashIn_1000() {
+        List<Banknote> banknoteRub1000 = new ArrayList<>();
+        banknoteRub1000.add(new BanknoteRub1000());
+        assertEquals(
+                1000,
+                myATM.cashIn(banknoteRub1000)
+        );
+    }
+
 
     @Test
     void cashOut_all() throws CashOutException {
