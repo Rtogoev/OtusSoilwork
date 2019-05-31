@@ -3,7 +3,7 @@ package ru.otus.homework.nominals;
 import java.util.Objects;
 
 public class Rub1000 implements Nominal {
-    private int denomination;
+    private final int denomination;
 
     public Rub1000() {
         this.denomination = 1000;

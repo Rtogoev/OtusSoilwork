@@ -1,6 +1,7 @@
 package ru.otus.homework.atm;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.homework.CashOutException;
 import ru.otus.homework.banknotes.*;
@@ -55,42 +56,48 @@ class MyATMTest {
                         amountBanknoteRub1000 * new Rub1000().getDenomination();
     }
 
+    @DisplayName("Cash In")
     @Test
-    void cashIn() {
+    void shouldCashIn() {
         assertEquals(expectedSum, myATM.cashIn(banknotesCashIn));
     }
 
+    @DisplayName("Cash In BanknoteRub10")
     @Test
-    void cashIn_10() {
+    void shouldCashInBanknoteRub10() {
         List<Banknote> banknoteRub10 = new ArrayList<>();
         banknoteRub10.add(new BanknoteRub10());
         assertEquals(10, myATM.cashIn(banknoteRub10));
     }
 
+    @DisplayName("Cash In BanknoteRub50")
     @Test
-    void cashIn_50() {
+    void shouldCashInBanknoteRub50() {
         List<Banknote> banknoteRub50 = new ArrayList<>();
         banknoteRub50.add(new BanknoteRub50());
         assertEquals(50, myATM.cashIn(banknoteRub50));
     }
 
+    @DisplayName("Cash In BanknoteRub100")
     @Test
-    void cashIn_100() {
+    void shouldCashInBanknoteRub100() {
         List<Banknote> banknoteRub100 = new ArrayList<>();
         banknoteRub100.add(new BanknoteRub100());
         assertEquals(100, myATM.cashIn(banknoteRub100));
     }
 
+    @DisplayName("Cash In BanknoteRub1000")
     @Test
-    void cashIn_1000() {
+    void shouldCashInBanknoteRub1000() {
         List<Banknote> banknoteRub1000 = new ArrayList<>();
         banknoteRub1000.add(new BanknoteRub1000());
         assertEquals(1000, myATM.cashIn(banknoteRub1000));
     }
 
 
+    @DisplayName("Withdraw Expected Cash")
     @Test
-    void cashOut_all() throws CashOutException, EmptyCasseteException {
+    void shouldWithdrawExpectedCash() throws CashOutException, EmptyCasseteException {
         myATM.cashIn(banknotesCashIn);
         List<Banknote> actualBanknotesCashOut = myATM.cashOut(expectedSum);
         assertEquals(
@@ -124,57 +131,64 @@ class MyATMTest {
         assertEquals(amountBanknoteRub1000, actualAmountBanknoteRub1000);
     }
 
+    @DisplayName("Withdraw BanknoteRub10")
     @Test
-    void cashOut_10() throws CashOutException, EmptyCasseteException {
+    void shouldWithdrawBanknoteRub10() throws CashOutException, EmptyCasseteException {
         List<Banknote> banknoteRub10 = new ArrayList<>();
         banknoteRub10.add(new BanknoteRub10());
         myATM.cashIn(banknoteRub10);
         assertEquals(banknoteRub10, myATM.cashOut(10));
     }
 
+    @DisplayName("Withdraw BanknoteRub50")
     @Test
-    void cashOut_50() throws CashOutException, EmptyCasseteException {
+    void shouldWithdrawBanknoteRub50() throws CashOutException, EmptyCasseteException {
         List<Banknote> banknoteRub50 = new ArrayList<>();
         banknoteRub50.add(new BanknoteRub50());
         myATM.cashIn(banknoteRub50);
         assertEquals(banknoteRub50, myATM.cashOut(50));
     }
 
+    @DisplayName("Withdraw BanknoteRub100")
     @Test
-    void cashOut_100() throws CashOutException, EmptyCasseteException {
+    void shouldWithdrawBanknoteRub100() throws CashOutException, EmptyCasseteException {
         List<Banknote> banknoteRub100 = new ArrayList<>();
         banknoteRub100.add(new BanknoteRub100());
         myATM.cashIn(banknoteRub100);
         assertEquals(banknoteRub100, myATM.cashOut(100));
     }
 
+    @DisplayName("Withdraw BanknoteRub1000")
     @Test
-    void cashOut_1000() throws CashOutException, EmptyCasseteException {
+    void shouldWithdrawBanknoteRub1000() throws CashOutException, EmptyCasseteException {
         List<Banknote> banknoteRub1000 = new ArrayList<>();
         banknoteRub1000.add(new BanknoteRub1000());
         myATM.cashIn(banknoteRub1000);
         assertEquals(banknoteRub1000, myATM.cashOut(1000));
     }
 
+    @DisplayName("throws CashOutException When Smaller")
     @Test
-    void cashOut_Error_smaller() throws CashOutException, EmptyCasseteException {
+    void shouldCashOutExceptionWhenSmaller() throws CashOutException, EmptyCasseteException {
         List<Banknote> banknoteRub1000 = new ArrayList<>();
         banknoteRub1000.add(new BanknoteRub1000());
         myATM.cashIn(banknoteRub1000);
         assertThrows(CashOutException.class, () -> myATM.cashOut(1));
     }
 
+    @DisplayName("throws CashOutException When Grater")
     @Test
-    void cashOut_Error_grater() throws CashOutException, EmptyCasseteException {
+    void shouldCashOutExceptionWhenGrater() throws CashOutException, EmptyCasseteException {
         List<Banknote> banknoteRub10 = new ArrayList<>();
         banknoteRub10.add(new BanknoteRub10());
         myATM.cashIn(banknoteRub10);
         assertThrows(CashOutException.class, () -> myATM.cashOut(100));
     }
 
+    @DisplayName("Get Balance")
     @Test
-    void showBalance() {
+    void shouldGetBalance() {
         assertEquals(expectedSum, myATM.cashIn(banknotesCashIn));
-        assertEquals(expectedSum, myATM.showBalance());
+        assertEquals(expectedSum, myATM.getBalance());
     }
 }

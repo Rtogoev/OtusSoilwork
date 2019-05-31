@@ -26,7 +26,7 @@ public class MyATM implements ATM {
     }
 
     @Override
-    public int showBalance() {
+    public int getBalance() {
         return dispenser.getBalance();
     }
 }

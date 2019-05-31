@@ -9,9 +9,11 @@ import java.util.List;
 public abstract class CassetteGeneral implements Cassette {
 
     protected List<Banknote> banknotes = new LinkedList<>();
-
+    protected Nominal nominal;
     @Override
-    public abstract Nominal getNominal();
+    public Nominal getNominal() {
+        return nominal;
+    }
 
     @Override
     public int getAmount() {

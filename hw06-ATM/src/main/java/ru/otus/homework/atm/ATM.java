@@ -12,5 +12,5 @@ public interface ATM {
 
     List<Banknote> cashOut(int money) throws CashOutException, EmptyCasseteException;
 
-    int showBalance();
+    int getBalance();
 }
