@@ -2,6 +2,7 @@ package ru.otus.homework.atm;
 
 import ru.otus.homework.CashOutException;
 import ru.otus.homework.banknotes.Banknote;
+import ru.otus.homework.cassettes.EmptyCasseteException;
 import ru.otus.homework.dispensers.DispenserRub;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class MyATM implements ATM {
     }
 
     @Override
-    public List<Banknote> cashOut(int sum) throws CashOutException {
+    public List<Banknote> cashOut(int sum) throws CashOutException, EmptyCasseteException {
         return dispenser.getBanknotes(sum);
     }
 
