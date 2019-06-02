@@ -1,28 +1,28 @@
 package ru.otus.homework.atm;
 
 import ru.otus.homework.CashOutException;
-import ru.otus.homework.banknotes.Banknote;
-import ru.otus.homework.cassettes.EmptyCasseteException;
-import ru.otus.homework.dispensers.DispenserRub;
+import ru.otus.homework.bills.Bill;
+import ru.otus.homework.cassettes.EmptyCassetteException;
+import ru.otus.homework.dispensers.Dispenser;
 
-import java.util.List;
+import java.util.Map;
 
 public class MyATM implements ATM {
 
-    public MyATM(DispenserRub dispenser) {
+    private Dispenser dispenser;
+
+    public MyATM(Dispenser dispenser) {
         this.dispenser = dispenser;
     }
 
-    private DispenserRub dispenser;
-
     @Override
-    public int cashIn(List<Banknote> banknotes) {
-        return dispenser.putIntoBuckets(banknotes);
+    public int cashIn(Map<Bill, Integer> bills) {
+        return dispenser.putIntoBuckets(bills);
     }
 
     @Override
-    public List<Banknote> cashOut(int sum) throws CashOutException, EmptyCasseteException {
-        return dispenser.getBanknotes(sum);
+    public Map<Bill, Integer> cashOut(int sum) throws CashOutException, EmptyCassetteException {
+        return dispenser.getBills(sum);
     }
 
     @Override

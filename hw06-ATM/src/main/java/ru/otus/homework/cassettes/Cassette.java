@@ -1,11 +1,21 @@
 package ru.otus.homework.cassettes;
 
-import ru.otus.homework.banknotes.Banknote;
-import ru.otus.homework.nominals.Nominal;
+public class Cassette {
+    private int amount;
 
-public interface Cassette {
-    Nominal getNominal();
-    int getAmount();
-    boolean addBanknote(Banknote banknote);
-    Banknote getBanknote() throws EmptyCasseteException;
+    public int getAmount() {
+        return amount;
+    }
+
+    public void addBill() {
+        amount++;
+    }
+
+    public int getBill() throws EmptyCassetteException {
+        if (amount == 0) {
+            throw new EmptyCassetteException();
+        }
+        amount--;
+        return 1;
+    }
 }

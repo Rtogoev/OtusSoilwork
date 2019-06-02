@@ -4,191 +4,226 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.homework.CashOutException;
-import ru.otus.homework.banknotes.*;
-import ru.otus.homework.cassettes.EmptyCasseteException;
+import ru.otus.homework.bills.Bill;
+import ru.otus.homework.cassettes.EmptyCassetteException;
 import ru.otus.homework.dispensers.DispenserRub;
-import ru.otus.homework.nominals.Rub10;
-import ru.otus.homework.nominals.Rub100;
-import ru.otus.homework.nominals.Rub1000;
-import ru.otus.homework.nominals.Rub50;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static ru.otus.homework.bills.Bill.*;
 
 class MyATMTest {
-    private static int amountBanknoteRub10 = 12;
-    private static int amountBanknoteRub50 = 64;
-    private static int amountBanknoteRub100 = 23;
-    private static int amountBanknoteRub1000 = 734;
+    private static int amountRub10 = 12;
+    private static int amountRub50 = 64;
+    private static int amountRub100 = 32;
+    private static int amountRub200 = 23;
+    private static int amountRub500 = 13;
+    private static int amountRub1000 = 734;
+    private static int amountRub2000 = 25;
+    private static int amountRub5000 = 42;
     private MyATM myATM;
-    private List<Banknote> banknotesCashIn;
-    private List<Banknote> expectedBanknotesCashOut;
+    private Map<Bill, Integer> expectedBillsCashIn;
+    //    private Map<Bill> expectedBillsCashOut;
     private int expectedSum;
 
     @BeforeEach
     void setUp() {
         myATM = new MyATM(new DispenserRub());
-        banknotesCashIn = new ArrayList<>();
-        expectedBanknotesCashOut = new ArrayList<>();
-        for (int i = 0; i < amountBanknoteRub10; i++) {
-            banknotesCashIn.add(new BanknoteRub10());
-        }
+        expectedBillsCashIn = new HashMap<>();
+//        expectedBillsCashOut = new ArrayList<>();
+        expectedBillsCashIn.put(RUB10, amountRub10);
+        expectedBillsCashIn.put(RUB50, amountRub50);
+        expectedBillsCashIn.put(RUB100, amountRub100);
+        expectedBillsCashIn.put(RUB200, amountRub200);
+        expectedBillsCashIn.put(RUB500, amountRub500);
+        expectedBillsCashIn.put(RUB1000, amountRub1000);
+        expectedBillsCashIn.put(RUB2000, amountRub2000);
+        expectedBillsCashIn.put(RUB5000, amountRub5000);
 
-        for (int i = 0; i < amountBanknoteRub50; i++) {
-            banknotesCashIn.add(new BanknoteRub50());
-        }
+//        expectedBillsCashOut.addAll(expectedBillsCashIn);
+        expectedSum = amountRub10 * RUB10.getNominal() +
+                amountRub50 * RUB50.getNominal() +
+                amountRub100 * RUB100.getNominal() +
+                amountRub200 * RUB200.getNominal() +
+                amountRub500 * RUB500.getNominal() +
+                amountRub1000 * RUB1000.getNominal() +
+                amountRub2000 * RUB2000.getNominal() +
+                amountRub5000 * RUB5000.getNominal();
 
-        for (int i = 0; i < amountBanknoteRub100; i++) {
-            banknotesCashIn.add(new BanknoteRub100());
-        }
 
-        for (int i = 0; i < amountBanknoteRub1000; i++) {
-            banknotesCashIn.add(new BanknoteRub1000());
-        }
-        expectedBanknotesCashOut.addAll(banknotesCashIn);
-        expectedSum =
-                amountBanknoteRub10 * new Rub10().getDenomination() +
-                        amountBanknoteRub50 * new Rub50().getDenomination() +
-                        amountBanknoteRub100 * new Rub100().getDenomination() +
-                        amountBanknoteRub1000 * new Rub1000().getDenomination();
     }
 
-    @DisplayName("Cash In")
+    @DisplayName("Успешное внесение всех валют сразу")
     @Test
     void shouldCashIn() {
-        assertEquals(expectedSum, myATM.cashIn(banknotesCashIn));
+        assertEquals(expectedSum, myATM.cashIn(expectedBillsCashIn));
     }
 
-    @DisplayName("Cash In BanknoteRub10")
+    @DisplayName("Успешное внесение 10 рублей")
     @Test
-    void shouldCashInBanknoteRub10() {
-        List<Banknote> banknoteRub10 = new ArrayList<>();
-        banknoteRub10.add(new BanknoteRub10());
-        assertEquals(10, myATM.cashIn(banknoteRub10));
+    void shouldCashInBillRub10() {
+        Map<Bill, Integer> billRub10 = new HashMap<>();
+        billRub10.put(RUB10, 1);
+        assertEquals(10, myATM.cashIn(billRub10));
     }
 
-    @DisplayName("Cash In BanknoteRub50")
+    @DisplayName("Успешное внесение 50 рублей")
     @Test
-    void shouldCashInBanknoteRub50() {
-        List<Banknote> banknoteRub50 = new ArrayList<>();
-        banknoteRub50.add(new BanknoteRub50());
-        assertEquals(50, myATM.cashIn(banknoteRub50));
+    void shouldCashInBillRub50() {
+        Map<Bill, Integer> billRub50 = new HashMap<>();
+        billRub50.put(RUB50, 1);
+        assertEquals(50, myATM.cashIn(billRub50));
     }
 
-    @DisplayName("Cash In BanknoteRub100")
+    @DisplayName("Успешное внесение 100 рублей")
     @Test
-    void shouldCashInBanknoteRub100() {
-        List<Banknote> banknoteRub100 = new ArrayList<>();
-        banknoteRub100.add(new BanknoteRub100());
-        assertEquals(100, myATM.cashIn(banknoteRub100));
+    void shouldCashInBillRub100() {
+        Map<Bill, Integer> billRub100 = new HashMap<>();
+        billRub100.put(RUB100, 1);
+        assertEquals(100, myATM.cashIn(billRub100));
     }
 
-    @DisplayName("Cash In BanknoteRub1000")
+    @DisplayName("Успешное внесение 200 рублей")
     @Test
-    void shouldCashInBanknoteRub1000() {
-        List<Banknote> banknoteRub1000 = new ArrayList<>();
-        banknoteRub1000.add(new BanknoteRub1000());
-        assertEquals(1000, myATM.cashIn(banknoteRub1000));
+    void shouldCashInBillRub200() {
+        Map<Bill, Integer> billRub200 = new HashMap<>();
+        billRub200.put(RUB200, 1);
+        assertEquals(200, myATM.cashIn(billRub200));
+    }
+
+    @DisplayName("Успешное внесение 500 рублей")
+    @Test
+    void shouldCashInBillRub500() {
+        Map<Bill, Integer> billRub500 = new HashMap<>();
+        billRub500.put(RUB500, 1);
+        assertEquals(500, myATM.cashIn(billRub500));
+    }
+
+    @DisplayName("Успешное внесение 5000 рублей")
+    @Test
+    void shouldCashInBillRub5000() {
+        Map<Bill, Integer> billRub5000 = new HashMap<>();
+        billRub5000.put(RUB5000, 1);
+        assertEquals(5000, myATM.cashIn(billRub5000));
+    }
+
+    @DisplayName("Успешное внесение 1000 рублей")
+    @Test
+    void shouldCashInBillRub1000() {
+        Map<Bill, Integer> billRub1000 = new HashMap<>();
+        billRub1000.put(RUB1000, 1);
+        assertEquals(1000, myATM.cashIn(billRub1000));
     }
 
 
-    @DisplayName("Withdraw Expected Cash")
+    @DisplayName("Успешная выдача всех валют сразу")
     @Test
-    void shouldWithdrawExpectedCash() throws CashOutException, EmptyCasseteException {
-        myATM.cashIn(banknotesCashIn);
-        List<Banknote> actualBanknotesCashOut = myATM.cashOut(expectedSum);
-        assertEquals(
-                expectedBanknotesCashOut.size(),
-                actualBanknotesCashOut.size()
-        );
-        int actualAmountBanknoteRub10 = 0;
-        int actualAmountBanknoteRub50 = 0;
-        int actualAmountBanknoteRub100 = 0;
-        int actualAmountBanknoteRub1000 = 0;
-        for (Banknote banknote : actualBanknotesCashOut) {
-            if (banknote.getNominal().equals(new Rub10())) {
-                actualAmountBanknoteRub10++;
-                continue;
-            }
-            if (banknote.getNominal().equals(new Rub50())) {
-                actualAmountBanknoteRub50++;
-                continue;
-            }
-            if (banknote.getNominal().equals(new Rub100())) {
-                actualAmountBanknoteRub100++;
-                continue;
-            }
-            if (banknote.getNominal().equals(new Rub1000())) {
-                actualAmountBanknoteRub1000++;
-            }
-        }
-        assertEquals(amountBanknoteRub10, actualAmountBanknoteRub10);
-        assertEquals(amountBanknoteRub50, actualAmountBanknoteRub50);
-        assertEquals(amountBanknoteRub100, actualAmountBanknoteRub100);
-        assertEquals(amountBanknoteRub1000, actualAmountBanknoteRub1000);
+    void shouldWithdrawExpectedCash() throws CashOutException, EmptyCassetteException {
+        myATM.cashIn(expectedBillsCashIn);
+        Map<Bill, Integer> actualBillsCashOut = myATM.cashOut(expectedSum);
+        assertEquals(expectedBillsCashIn, actualBillsCashOut);
     }
 
-    @DisplayName("Withdraw BanknoteRub10")
+    @DisplayName("Успешная выдача 10 рублей")
     @Test
-    void shouldWithdrawBanknoteRub10() throws CashOutException, EmptyCasseteException {
-        List<Banknote> banknoteRub10 = new ArrayList<>();
-        banknoteRub10.add(new BanknoteRub10());
-        myATM.cashIn(banknoteRub10);
-        assertEquals(banknoteRub10, myATM.cashOut(10));
+    void shouldWithdrawBillRub10() throws CashOutException, EmptyCassetteException {
+        Map<Bill, Integer> billRub10 = new HashMap<>();
+        billRub10.put(RUB10, 1);
+        myATM.cashIn(billRub10);
+        assertEquals(billRub10, myATM.cashOut(10));
     }
 
-    @DisplayName("Withdraw BanknoteRub50")
+
+    @DisplayName("Успешная выдача 50 рублей")
     @Test
-    void shouldWithdrawBanknoteRub50() throws CashOutException, EmptyCasseteException {
-        List<Banknote> banknoteRub50 = new ArrayList<>();
-        banknoteRub50.add(new BanknoteRub50());
-        myATM.cashIn(banknoteRub50);
-        assertEquals(banknoteRub50, myATM.cashOut(50));
+    void shouldWithdrawBillRub50() throws CashOutException, EmptyCassetteException {
+        Map<Bill, Integer> billRub50 = new HashMap<>();
+        billRub50.put(RUB50, 1);
+        myATM.cashIn(billRub50);
+        assertEquals(billRub50, myATM.cashOut(50));
     }
 
-    @DisplayName("Withdraw BanknoteRub100")
+
+    @DisplayName("Успешная выдача 100 рублей")
     @Test
-    void shouldWithdrawBanknoteRub100() throws CashOutException, EmptyCasseteException {
-        List<Banknote> banknoteRub100 = new ArrayList<>();
-        banknoteRub100.add(new BanknoteRub100());
-        myATM.cashIn(banknoteRub100);
-        assertEquals(banknoteRub100, myATM.cashOut(100));
+    void shouldWithdrawBillRub100() throws CashOutException, EmptyCassetteException {
+        Map<Bill, Integer> billRub100 = new HashMap<>();
+        billRub100.put(RUB100, 1);
+        myATM.cashIn(billRub100);
+        assertEquals(billRub100, myATM.cashOut(100));
     }
 
-    @DisplayName("Withdraw BanknoteRub1000")
+
+    @DisplayName("Успешная выдача 200 рублей")
     @Test
-    void shouldWithdrawBanknoteRub1000() throws CashOutException, EmptyCasseteException {
-        List<Banknote> banknoteRub1000 = new ArrayList<>();
-        banknoteRub1000.add(new BanknoteRub1000());
-        myATM.cashIn(banknoteRub1000);
-        assertEquals(banknoteRub1000, myATM.cashOut(1000));
+    void shouldWithdrawBillRub200() throws CashOutException, EmptyCassetteException {
+        Map<Bill, Integer> billRub200 = new HashMap<>();
+        billRub200.put(RUB200, 1);
+        myATM.cashIn(billRub200);
+        assertEquals(billRub200, myATM.cashOut(200));
     }
 
-    @DisplayName("throws CashOutException When Smaller")
+
+    @DisplayName("Успешная выдача 200 рублей")
     @Test
-    void shouldCashOutExceptionWhenSmaller() throws CashOutException, EmptyCasseteException {
-        List<Banknote> banknoteRub1000 = new ArrayList<>();
-        banknoteRub1000.add(new BanknoteRub1000());
-        myATM.cashIn(banknoteRub1000);
+    void shouldWithdrawBillRub2000() throws CashOutException, EmptyCassetteException {
+        Map<Bill, Integer> billRub2000 = new HashMap<>();
+        billRub2000.put(RUB2000, 1);
+        myATM.cashIn(billRub2000);
+        assertEquals(billRub2000, myATM.cashOut(2000));
+    }
+
+
+
+
+    @DisplayName("Успешная выдача 5000 рублей")
+    @Test
+    void shouldWithdrawBillRub5000() throws CashOutException, EmptyCassetteException {
+        Map<Bill, Integer> billRub5000 = new HashMap<>();
+        billRub5000.put(RUB5000, 1);
+        myATM.cashIn(billRub5000);
+        assertEquals(billRub5000, myATM.cashOut(5000));
+    }
+
+
+
+    @DisplayName("Успешная выдача 1000 рублей")
+    @Test
+    void shouldWithdrawBillRub1000() throws CashOutException, EmptyCassetteException {
+        Map<Bill, Integer> billRub1000 = new HashMap<>();
+        billRub1000.put(RUB1000, 1);
+        myATM.cashIn(billRub1000);
+        assertEquals(billRub1000, myATM.cashOut(1000));
+    }
+
+
+
+    @DisplayName("Попытка выдачи суммы, меньшей чем минимальный имеющийся номинал - CashOutException")
+    @Test
+    void shouldCashOutExceptionWhenSmaller() throws CashOutException, EmptyCassetteException {
+        Map<Bill, Integer> billRub1000 = new HashMap<>();
+        billRub1000.put(RUB1000, 1);
+        myATM.cashIn(billRub1000);
         assertThrows(CashOutException.class, () -> myATM.cashOut(1));
     }
 
-    @DisplayName("throws CashOutException When Grater")
+
+    @DisplayName("Выдача суммы, большей чем есть в банкомате - CashOutException")
     @Test
-    void shouldCashOutExceptionWhenGrater() throws CashOutException, EmptyCasseteException {
-        List<Banknote> banknoteRub10 = new ArrayList<>();
-        banknoteRub10.add(new BanknoteRub10());
-        myATM.cashIn(banknoteRub10);
-        assertThrows(CashOutException.class, () -> myATM.cashOut(100));
+    void shouldCashOutExceptionWhenGrater() throws CashOutException, EmptyCassetteException {
+        Map<Bill, Integer> billRub10 = new HashMap<>();
+        billRub10.put(RUB10, 1);
+        myATM.cashIn(billRub10);
+        assertThrows(CashOutException.class, () -> myATM.cashOut(1000));
     }
 
     @DisplayName("Get Balance")
     @Test
     void shouldGetBalance() {
-        assertEquals(expectedSum, myATM.cashIn(banknotesCashIn));
+        assertEquals(expectedSum, myATM.cashIn(expectedBillsCashIn));
         assertEquals(expectedSum, myATM.getBalance());
     }
 }

@@ -1,16 +1,16 @@
 package ru.otus.homework.atm;
 
 import ru.otus.homework.CashOutException;
-import ru.otus.homework.banknotes.Banknote;
-import ru.otus.homework.cassettes.EmptyCasseteException;
+import ru.otus.homework.bills.Bill;
+import ru.otus.homework.cassettes.EmptyCassetteException;
 
-import java.util.List;
+import java.util.Map;
 
 public interface ATM {
 
-    int cashIn(List<Banknote> banknotes);
+    int cashIn(Map<Bill, Integer> bills);
 
-    List<Banknote> cashOut(int money) throws CashOutException, EmptyCasseteException;
+    Map<Bill, Integer> cashOut(int money) throws CashOutException, EmptyCassetteException;
 
     int getBalance();
 }

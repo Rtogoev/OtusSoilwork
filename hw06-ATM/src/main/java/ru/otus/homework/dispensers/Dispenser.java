@@ -1,15 +1,15 @@
 package ru.otus.homework.dispensers;
 
 import ru.otus.homework.CashOutException;
-import ru.otus.homework.banknotes.Banknote;
-import ru.otus.homework.cassettes.EmptyCasseteException;
+import ru.otus.homework.bills.Bill;
+import ru.otus.homework.cassettes.EmptyCassetteException;
 
-import java.util.List;
+import java.util.Map;
 
 public interface Dispenser {
-    int putIntoBuckets(List<Banknote> banknotes);
+    int putIntoBuckets(Map<Bill, Integer> bills);
 
-    List<Banknote> getBanknotes(int sum) throws CashOutException, EmptyCasseteException;
+    Map<Bill, Integer> getBills(int sum) throws CashOutException, EmptyCassetteException;
 
     int getBalance();
 }

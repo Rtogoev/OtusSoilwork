@@ -1,93 +1,101 @@
 package ru.otus.homework.dispensers;
 
 import ru.otus.homework.CashOutException;
-import ru.otus.homework.banknotes.Banknote;
-import ru.otus.homework.cassettes.*;
-import ru.otus.homework.nominals.*;
+import ru.otus.homework.bills.Bill;
+import ru.otus.homework.cassettes.Cassette;
+import ru.otus.homework.cassettes.EmptyCassetteException;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeSet;
+
+import static ru.otus.homework.bills.Bill.*;
 
 public class DispenserRub implements Dispenser {
-    private final Map<Nominal, Cassette> cassettes = new HashMap<>();
+    private final Map<Bill, Cassette> cassettes = new HashMap<>();
 
     public DispenserRub() {
-        cassettes.put(new Rub10(), new CassetteRub10());
-        cassettes.put(new Rub50(), new CassetteRub50());
-        cassettes.put(new Rub100(), new CassetteRub100());
-        cassettes.put(new Rub1000(), new CassetteRub1000());
+        cassettes.put(RUB10, new Cassette());
+        cassettes.put(RUB50, new Cassette());
+        cassettes.put(RUB100, new Cassette());
+        cassettes.put(RUB200, new Cassette());
+        cassettes.put(RUB500, new Cassette());
+        cassettes.put(RUB1000, new Cassette());
+        cassettes.put(RUB2000, new Cassette());
+        cassettes.put(RUB5000, new Cassette());
     }
 
     @Override
-    public int putIntoBuckets(List<Banknote> banknotes) {
-        return banknotes.stream()
-                .mapToInt(
-                        banknote -> {
-                            cassettes.get(banknote.getNominal())
-                                    .addBanknote(banknote);
-                            return banknote.getNominal()
-                                    .getDenomination();
-                        }
-                ).sum();
+    public int putIntoBuckets(Map<Bill, Integer> bills) {
+        int sum = 0;
+        for (Map.Entry<Bill, Integer> entry : bills.entrySet()) {
+            Bill bill = entry.getKey();
+            Integer amount = entry.getValue();
+            for (int i = 0; i < amount; i++) {
+                cassettes.get(bill).addBill();
+            }
+            sum = sum + bill.getNominal() * amount;
+        }
+        return sum;
     }
 
     @Override
-    public List<Banknote> getBanknotes(int sum) throws CashOutException, EmptyCasseteException {
-        List<Banknote> banknotesCashOut = new LinkedList<>();
-        Set<Nominal> nominates = new HashSet(cassettes.keySet());
+    public Map<Bill, Integer> getBills(int sum) throws CashOutException, EmptyCassetteException {
+        Map<Bill,Integer> BillsCashOut = new HashMap<>();
+        TreeSet<Bill> nominates = new TreeSet<>(cassettes.keySet());
         while (nominates.size() != 0 && sum != 0) {
-            Nominal nominalWithMaxDenomination = findNominalWithMaxDenomination(nominates);
-            nominates.remove(nominalWithMaxDenomination);
-            int banknotesNeed = sum / nominalWithMaxDenomination.getDenomination();
-            if (banknotesNeed == 0) {
+            Bill billMaxNominal = nominates.pollLast();
+            int billsNeed = sum / billMaxNominal.getNominal();
+            if (billsNeed == 0) {
                 continue;
             }
-            int banknoteAmount = cassettes.get(nominalWithMaxDenomination).getAmount();
-            if (banknotesNeed - banknoteAmount >= 0) {
-                sum = sum - banknoteAmount * nominalWithMaxDenomination.getDenomination();
-                banknotesCashOut.addAll(getBanknotesFromCassette(nominalWithMaxDenomination, -1));
+            int billAmount = cassettes.get(billMaxNominal).getAmount();
+            if (billsNeed - billAmount >= 0) {
+                sum = sum - billAmount * billMaxNominal.getNominal();
+                BillsCashOut.put(
+                        billMaxNominal,
+                        getBillsFromCassette(
+                                billMaxNominal,
+                                -1
+                        )
+                );
                 continue;
             }
-            sum = sum - banknotesNeed * nominalWithMaxDenomination.getDenomination();
-            banknotesCashOut.addAll(getBanknotesFromCassette(nominalWithMaxDenomination, banknotesNeed));
+            sum = sum - billsNeed * billMaxNominal.getNominal();
+            BillsCashOut.put(
+                    billMaxNominal,
+                    getBillsFromCassette(
+                            billMaxNominal,
+                            billsNeed
+                    )
+            );
         }
 
         if (sum != 0) {
             throw new CashOutException();
         }
 
-        return banknotesCashOut;
+        return BillsCashOut;
     }
 
     /**
-     * if amount = -1, return all banknotes of chosen nominal
-     *
-     * @param nominal
-     * @param amount
-     * @return
+     * if amount = -1, return all bills of chosen nominal
      */
-    private List<Banknote> getBanknotesFromCassette(Nominal nominal, int amount) throws EmptyCasseteException {
-        List<Banknote> banknotesFromCassette = new ArrayList<>();
-        Cassette cassette = cassettes.get(nominal);
+    private int getBillsFromCassette(Bill bill, int amount) throws EmptyCassetteException {
+        Cassette cassette = cassettes.get(bill);
         amount = amount == -1 ? cassette.getAmount() : amount;
         for (int i = 0; i < amount; i++) {
-            banknotesFromCassette.add(cassette.getBanknote());
+            cassette.getBill();
         }
-        return banknotesFromCassette;
-    }
-
-    private Nominal findNominalWithMaxDenomination(Set<Nominal> nominates) {
-        return nominates.stream().max(Comparator.comparing(Nominal::getDenomination)).get();
+        return amount;
     }
 
     @Override
     public int getBalance() {
-        return cassettes.values()
-                .stream()
-                .mapToInt(
-                        cassette -> cassette.getAmount()
-                                *
-                                cassette.getNominal().getDenomination()
-                )
-                .sum();
+        int sum = 0;
+        for (Map.Entry<Bill, Cassette> entry : cassettes.entrySet()) {
+            sum = sum + entry.getKey().getNominal() * entry.getValue().getAmount();
+        }
+    return sum;
     }
 }
