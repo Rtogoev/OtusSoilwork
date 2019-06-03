@@ -5,14 +5,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.homework.CashOutException;
 import ru.otus.homework.bills.Bill;
+import ru.otus.homework.cassettes.Cassette;
 import ru.otus.homework.cassettes.EmptyCassetteException;
-import ru.otus.homework.dispensers.DispenserRub;
+import ru.otus.homework.dispensers.DispenserImpl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static ru.otus.homework.bills.Bill.*;
 
 class MyATMTest {
@@ -31,9 +32,18 @@ class MyATMTest {
 
     @BeforeEach
     void setUp() {
-        myATM = new MyATM(new DispenserRub());
+        Map<Bill, Cassette> cassettes = new HashMap<>();
+        cassettes.put(RUB10, new Cassette());
+        cassettes.put(RUB50, new Cassette());
+        cassettes.put(RUB100, new Cassette());
+        cassettes.put(RUB200, new Cassette());
+        cassettes.put(RUB500, new Cassette());
+        cassettes.put(RUB1000, new Cassette());
+        cassettes.put(RUB2000, new Cassette());
+        cassettes.put(RUB5000, new Cassette());
+
+        myATM = new MyATM(new DispenserImpl(cassettes));
         expectedBillsCashIn = new HashMap<>();
-//        expectedBillsCashOut = new ArrayList<>();
         expectedBillsCashIn.put(RUB10, amountRub10);
         expectedBillsCashIn.put(RUB50, amountRub50);
         expectedBillsCashIn.put(RUB100, amountRub100);
@@ -43,7 +53,6 @@ class MyATMTest {
         expectedBillsCashIn.put(RUB2000, amountRub2000);
         expectedBillsCashIn.put(RUB5000, amountRub5000);
 
-//        expectedBillsCashOut.addAll(expectedBillsCashIn);
         expectedSum = amountRub10 * RUB10.getNominal() +
                 amountRub50 * RUB50.getNominal() +
                 amountRub100 * RUB100.getNominal() +
@@ -52,8 +61,6 @@ class MyATMTest {
                 amountRub1000 * RUB1000.getNominal() +
                 amountRub2000 * RUB2000.getNominal() +
                 amountRub5000 * RUB5000.getNominal();
-
-
     }
 
     @DisplayName("Успешное внесение всех валют сразу")
@@ -177,8 +184,6 @@ class MyATMTest {
     }
 
 
-
-
     @DisplayName("Успешная выдача 5000 рублей")
     @Test
     void shouldWithdrawBillRub5000() throws CashOutException, EmptyCassetteException {
@@ -187,7 +192,6 @@ class MyATMTest {
         myATM.cashIn(billRub5000);
         assertEquals(billRub5000, myATM.cashOut(5000));
     }
-
 
 
     @DisplayName("Успешная выдача 1000 рублей")
@@ -200,7 +204,6 @@ class MyATMTest {
     }
 
 
-
     @DisplayName("Попытка выдачи суммы, меньшей чем минимальный имеющийся номинал - CashOutException")
     @Test
     void shouldCashOutExceptionWhenSmaller() throws CashOutException, EmptyCassetteException {
@@ -210,6 +213,31 @@ class MyATMTest {
         assertThrows(CashOutException.class, () -> myATM.cashOut(1));
     }
 
+    @DisplayName("Попытка выдачи суммы, меньшей того, что есть в банкомате. Затем проверка баланса.")
+    @Test
+    void brokenCashOut() {
+        Map<Bill, Cassette> cassettes = new HashMap<>();
+        cassettes.put(RUB10, new Cassette());
+        cassettes.put(RUB50, new Cassette());
+        cassettes.put(RUB100, new Cassette());
+        cassettes.put(RUB200, new Cassette());
+        cassettes.put(RUB500, new Cassette());
+        cassettes.put(RUB1000, new Cassette());
+        cassettes.put(RUB2000, new Cassette());
+        cassettes.put(RUB5000, new Cassette());
+
+        ATM atm = new MyATM(new DispenserImpl(cassettes));
+        atm.cashIn(Collections.singletonMap(RUB100, 2));
+
+        Map<Bill, Integer> billIntegerMap = null;
+        try {
+            billIntegerMap = atm.cashOut(150);
+        } catch (CashOutException | EmptyCassetteException e) {
+            e.printStackTrace();
+        }
+        assertNull(billIntegerMap);
+        assertEquals(200, atm.getBalance());
+    }
 
     @DisplayName("Выдача суммы, большей чем есть в банкомате - CashOutException")
     @Test
@@ -220,7 +248,7 @@ class MyATMTest {
         assertThrows(CashOutException.class, () -> myATM.cashOut(1000));
     }
 
-    @DisplayName("Get Balance")
+    @DisplayName("Успешная проверка баланса")
     @Test
     void shouldGetBalance() {
         assertEquals(expectedSum, myATM.cashIn(expectedBillsCashIn));
