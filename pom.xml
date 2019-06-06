@@ -14,6 +14,7 @@
         <module>hw03-DIYtestFramework</module>
         <module>hw04-AutoLog</module>
         <module>hw05-gc</module>
+        <module>hw06-ATM</module>
     </modules>
 
     <properties>
