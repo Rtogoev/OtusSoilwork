@@ -3,6 +3,13 @@ package ru.otus.homework.cassettes;
 public class Cassette {
     private int amount;
 
+    public Cassette() {
+    }
+
+    public Cassette(int amount) {
+        this.amount = amount;
+    }
+
     public int getAmount() {
         return amount;
     }

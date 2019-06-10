@@ -29,4 +29,14 @@ public class MyATM implements ATM {
     public int getBalance() {
         return dispenser.getBalance();
     }
+
+    @Override
+    public Dispenser getDispenser() {
+        return dispenser;
+    }
+
+    @Override
+    public void setDispenser(Dispenser dispenser) {
+        this.dispenser = dispenser;
+    }
 }

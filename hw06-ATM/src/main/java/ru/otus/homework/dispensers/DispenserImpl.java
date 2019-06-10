@@ -32,6 +32,9 @@ public class DispenserImpl implements Dispenser {
 
     @Override
     public Map<Bill, Integer> getBills(int sum) throws CashOutException, EmptyCassetteException {
+        // TODO вот тут можно запилить чеин оф респонсибилити.
+        //  Первый ФИЛЬТР ПРОВЕРЯЕТ ЧТО ЗАПРОШЕННАЯ СУММА НЕ БОЛЬШЕ ВСЕГО ЧТО ЕСТЬ
+        //  И НЕ МЕНЬШЕ МЕНИМАЛЬНОГО НОМИНАЛА
         Map<Bill, Integer> billsCashOut = new HashMap<>();
         TreeSet<Bill> nominates = new TreeSet<>(cassettes.keySet());
         while (nominates.size() != 0 && sum != 0) {
@@ -78,5 +81,10 @@ public class DispenserImpl implements Dispenser {
             sum = sum + entry.getKey().getNominal() * entry.getValue().getAmount();
         }
         return sum;
+    }
+
+    @Override
+    public Map<Bill, Cassette> getCassettes() {
+        return cassettes;
     }
 }
