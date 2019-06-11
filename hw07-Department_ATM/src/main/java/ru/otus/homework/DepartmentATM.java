@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class DepartmentATM {
     private List<ATM> atms;
-    private InMemoryDB backUp; // TODO вот тут мементо? отдельный класс, в котором копии банокматов. Делается копия мапы и новый банкос
+    private InMemoryDB backUp;
 
     public DepartmentATM(List<ATM> atms) {
         this.atms = atms;

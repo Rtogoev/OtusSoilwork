@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryDB implements DB {
-    List<StartStateMemento> data;
+    private List<StartStateMemento> data;
 
     public InMemoryDB() {
         this.data = new ArrayList<>();
