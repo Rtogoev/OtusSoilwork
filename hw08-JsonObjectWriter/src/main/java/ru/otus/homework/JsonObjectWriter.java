@@ -43,4 +43,8 @@ public class JsonObjectWriter {
     public String toJson(Collection collection) {
         return null;
     }
+
+    public <T extends Object> String toJson(T expected) {
+        return null;
+    }
 }
