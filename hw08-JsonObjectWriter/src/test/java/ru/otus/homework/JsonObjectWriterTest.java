@@ -1,7 +1,6 @@
 package ru.otus.homework;
 
 import com.google.gson.Gson;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,12 +20,8 @@ class JsonObjectWriterTest {
         jsonObjectWriter = new JsonObjectWriter();
     }
 
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
-    void toJsonByte() {
+    void toJsonArrayByte() {
         byte[] expected = "byte".getBytes();
         assertEquals(
                 expected,
@@ -38,7 +33,7 @@ class JsonObjectWriterTest {
     }
 
     @Test
-    void toJsonInt() {
+    void toJsonArrayInt() {
         int[] expected = new int[]{1, 2, 3, 4};
         assertEquals(
                 expected,
@@ -50,7 +45,7 @@ class JsonObjectWriterTest {
     }
 
     @Test
-    void toJsonShort() {
+    void toJsonArrayShort() {
         short[] expected = new short[]{1, 2, 3, 4};
         assertEquals(
                 expected,
@@ -62,7 +57,7 @@ class JsonObjectWriterTest {
     }
 
     @Test
-    void toJsonLong() {
+    void toJsonArrayLong() {
         long[] expected = new long[]{1, 2, 3, 4};
         assertEquals(
                 expected,
@@ -74,7 +69,7 @@ class JsonObjectWriterTest {
     }
 
     @Test
-    void toJsonDouble() {
+    void toJsonArrayDouble() {
         double[] expected = new double[]{1.1, 2.2, 3.3, 4.4};
         assertEquals(
                 expected,
@@ -86,7 +81,7 @@ class JsonObjectWriterTest {
     }
 
     @Test
-    void toJsonObject() {
+    void toJsonArrayObject() {
         ExperimentalMouse[] expected = new ExperimentalMouse[]{
                 ExperimentalMouse.createDefault(),
                 ExperimentalMouse.createDefault()
@@ -115,26 +110,100 @@ class JsonObjectWriterTest {
     }
 
     @Test
-    void toJsonString() {
-        String[] expected = new String[]{"expected1", "expected2"};
+    void toJsonByte() {
+        byte expected = Byte.parseByte("b");
         assertEquals(
                 expected,
                 gson.fromJson(
                         jsonObjectWriter.toJson(expected),
-                        String[].class
+                        byte.class
+                )
+        );
+    }
+
+    @Test
+    void toJsonInt() {
+        int expected = 123456789;
+        assertEquals(
+                expected,
+                gson.fromJson(
+                        jsonObjectWriter.toJson(expected),
+                        int.class
+                )
+        );
+    }
+
+    @Test
+    void toJsonShort() {
+        short expected = (short) 987654321;
+        assertEquals(
+                expected,
+                gson.fromJson(
+                        jsonObjectWriter.toJson(expected),
+                        short.class
+                )
+        );
+    }
+
+    @Test
+    void toJsonLong() {
+        long expected = 345672345;
+        assertEquals(
+                expected,
+                gson.fromJson(
+                        jsonObjectWriter.toJson(expected),
+                        long.class
+                )
+        );
+    }
+
+    @Test
+    void toJsonDouble() {
+        double expected = 123.123;
+        assertEquals(
+                expected,
+                gson.fromJson(
+                        jsonObjectWriter.toJson(expected),
+                        double.class
+                )
+        );
+    }
+
+    @Test
+    void toJsonObject() {
+        ExperimentalMouse expected = ExperimentalMouse.createDefault();
+        assertEquals(
+                expected,
+                gson.fromJson(
+                        jsonObjectWriter.toJson(expected),
+                        ExperimentalMouse.class
+                )
+        );
+    }
+    
+    @Test
+    void toJsonString() {
+        String expected = "expected";
+        assertEquals(
+                expected,
+                gson.fromJson(
+                        jsonObjectWriter.toJson(expected),
+                        String.class
                 )
         );
     }
 
     @Test
     void toJsonFloat() {
-        float[] expected = new float[]{1.1f, 2.2f, 3.3f, 4.4f};
+        gson.toJson(ExperimentalMouse.createDefault());
+        float expected = 312.123F;
         assertEquals(
                 expected,
                 gson.fromJson(
                         jsonObjectWriter.toJson(expected),
-                        float[].class
+                        float.class
                 )
         );
     }
+
 }
