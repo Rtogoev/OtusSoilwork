@@ -17,7 +17,10 @@ class JsonObjectWriterTest {
     @BeforeEach
     void setUp() {
         gson = new Gson();
-        jsonObjectWriter = new JsonObjectWriter();
+        jsonObjectWriter = new JsonObjectWriter(
+                new ReflectionService(),
+                new JsonService()
+        );
     }
 
     @Test
@@ -111,7 +114,7 @@ class JsonObjectWriterTest {
 
     @Test
     void toJsonByte() {
-        byte expected = Byte.parseByte("b");
+        byte expected = (byte) 'b';
         assertEquals(
                 expected,
                 gson.fromJson(
@@ -180,7 +183,7 @@ class JsonObjectWriterTest {
                 )
         );
     }
-    
+
     @Test
     void toJsonString() {
         String expected = "expected";

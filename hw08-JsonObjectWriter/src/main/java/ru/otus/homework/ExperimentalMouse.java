@@ -29,13 +29,69 @@ public class ExperimentalMouse {
 
     public static ExperimentalMouse createDefault() {
         return new ExperimentalMouse(
-                Byte.parseByte("0"),
-                1,
-                Short.parseShort("2"),
-                3L,
-                4F,
-                5D,
-                "String"
+                (byte) 'b',
+                1418998765,
+                Short.parseShort("2613"),
+                356596L,
+                8786784F,
+                515234D,
+                "default"
         );
+    }
+
+    public byte getaByte() {
+        return aByte;
+    }
+
+    public void setaByte(byte aByte) {
+        this.aByte = aByte;
+    }
+
+    public int getAnInt() {
+        return anInt;
+    }
+
+    public void setAnInt(int anInt) {
+        this.anInt = anInt;
+    }
+
+    public short getaShort() {
+        return aShort;
+    }
+
+    public void setaShort(short aShort) {
+        this.aShort = aShort;
+    }
+
+    public long getaLong() {
+        return aLong;
+    }
+
+    public void setaLong(long aLong) {
+        this.aLong = aLong;
+    }
+
+    public float getaFloat() {
+        return aFloat;
+    }
+
+    public void setaFloat(float aFloat) {
+        this.aFloat = aFloat;
+    }
+
+    public double getaDouble() {
+        return aDouble;
+    }
+
+    public void setaDouble(double aDouble) {
+        this.aDouble = aDouble;
+    }
+
+    public String getString() {
+        return string;
+    }
+
+    public void setString(String string) {
+        this.string = string;
     }
 }
