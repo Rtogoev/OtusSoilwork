@@ -1,5 +1,7 @@
 package ru.otus.homework;
 
+import java.util.Objects;
+
 public class ExperimentalMouse {
     private byte aByte;
     private int anInt;
@@ -37,6 +39,25 @@ public class ExperimentalMouse {
                 515234D,
                 "default"
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExperimentalMouse that = (ExperimentalMouse) o;
+        return aByte == that.aByte &&
+                anInt == that.anInt &&
+                aShort == that.aShort &&
+                aLong == that.aLong &&
+                Float.compare(that.aFloat, aFloat) == 0 &&
+                Double.compare(that.aDouble, aDouble) == 0 &&
+                Objects.equals(string, that.string);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(aByte, anInt, aShort, aLong, aFloat, aDouble, string);
     }
 
     public byte getaByte() {

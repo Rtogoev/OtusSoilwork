@@ -19,37 +19,30 @@ public class JsonObjectWriter {
 
     public <T> String toJson(T object) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
-
-        if (object.getClass().getSimpleName().equals("String")) {
-            return object.toString();
-        }
-        if (object.getClass().getSuperclass().getSimpleName().equals("Number")) {
-            return object.toString();
-        }
-        if (object.getClass().getSuperclass().getSimpleName().equals("Object")) {
-            for (Field declaredField : object.getClass().getDeclaredFields()) {
-                builder.add(declaredField.getName(), declaredField.toString());
+        try {
+            if (object.getClass().getSimpleName().equals("String")) {
+                return object.toString();
             }
-            return builder.build().toString();
-        }
+            if (object.getClass().getSuperclass().getSimpleName().equals("Number")) {
+                return object.toString();
+            }
+            if (object.getClass().getSuperclass().getSimpleName().equals("Object")) {
 
-//      companyBuilder.add("websites", websitesBuilder);
-//      companyBuilder.add("address", addressBuilder);
-//
-//    // Root JsonObject
-//
-//      System.out.println("Root JsonObject: " + rootJSONObject);
-//
-//    // Write to file
-//    File outFile= new File("C:/test/company2.txt");
-//      outFile.getParentFile().mkdirs();
-//
-//    OutputStream os = new FileOutputStream(outFile);
-//    JsonWriter jsonWriter = Json.createWriter(os);
-//
-//      jsonWriter.writeObject(rootJSONObject);
-//      jsonWriter.close();
-        return null;
+                for (Field field : object.getClass().getDeclaredFields()) {
+                    try {
+                        builder.add(field.getName(), field.get(object).toString());
+                    } catch (IllegalAccessException e) {
+                        field.setAccessible(true);
+                        builder.add(field.getName(), field.get(object).toString());
+                        field.setAccessible(false);
+                    }
+                }
+            }
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+        }
+        return builder.build().toString();
+
     }
 
     public <T> String toJson(T[] array) {
