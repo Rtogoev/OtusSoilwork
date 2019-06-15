@@ -5,8 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JsonObjectWriterTest {
@@ -17,70 +19,57 @@ class JsonObjectWriterTest {
     @BeforeEach
     void setUp() {
         gson = new Gson();
-        jsonObjectWriter = new JsonObjectWriter(
-                new ReflectionService(),
-                new JsonService()
-        );
+        jsonObjectWriter = new JsonObjectWriter();
     }
 
     @Test
     void toJsonArrayByte() {
         byte[] expected = "byte".getBytes();
-        assertEquals(
-                expected,
-                gson.fromJson(
-                        jsonObjectWriter.toJson(expected),
-                        byte[].class
-                )
+        byte[] actual = gson.fromJson(
+                jsonObjectWriter.toJson(expected),
+                byte[].class
         );
+        assertEquals(0, Arrays.compare(expected, actual));
     }
 
     @Test
     void toJsonArrayInt() {
         int[] expected = new int[]{1, 2, 3, 4};
-        assertEquals(
-                expected,
-                gson.fromJson(
-                        jsonObjectWriter.toJson(expected),
-                        int[].class
-                )
+        int[] actual = gson.fromJson(
+                jsonObjectWriter.toJson(expected),
+                int[].class
         );
+        assertEquals(0, Arrays.compare(expected, actual));
     }
 
     @Test
     void toJsonArrayShort() {
         short[] expected = new short[]{1, 2, 3, 4};
-        assertEquals(
-                expected,
-                gson.fromJson(
-                        jsonObjectWriter.toJson(expected),
-                        short[].class
-                )
+        short[] actual = gson.fromJson(
+                jsonObjectWriter.toJson(expected),
+                short[].class
         );
+        assertEquals(0, Arrays.compare(expected, actual));
     }
 
     @Test
     void toJsonArrayLong() {
         long[] expected = new long[]{1, 2, 3, 4};
-        assertEquals(
-                expected,
-                gson.fromJson(
-                        jsonObjectWriter.toJson(expected),
-                        long[].class
-                )
+        long[] actual = gson.fromJson(
+                jsonObjectWriter.toJson(expected),
+                long[].class
         );
+        assertEquals(0, Arrays.compare(expected, actual));
     }
 
     @Test
     void toJsonArrayDouble() {
         double[] expected = new double[]{1.1, 2.2, 3.3, 4.4};
-        assertEquals(
-                expected,
-                gson.fromJson(
-                        jsonObjectWriter.toJson(expected),
-                        double[].class
-                )
+        double[] actual = gson.fromJson(
+                jsonObjectWriter.toJson(expected),
+                double[].class
         );
+        assertEquals(0, Arrays.compare(expected, actual));
     }
 
     @Test
@@ -89,13 +78,12 @@ class JsonObjectWriterTest {
                 ExperimentalMouse.createDefault(),
                 ExperimentalMouse.createDefault()
         };
-        assertEquals(
-                expected,
-                gson.fromJson(
-                        jsonObjectWriter.toJson(expected),
-                        ExperimentalMouse[].class
-                )
+        String actualString = jsonObjectWriter.toJson(expected);
+        ExperimentalMouse[] actual = gson.fromJson(
+                actualString,
+                ExperimentalMouse[].class
         );
+        assertArrayEquals(expected, actual);
     }
 
     @Test

@@ -1,5 +1,7 @@
 package ru.otus.homework;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class ExperimentalMouse {
@@ -10,6 +12,8 @@ public class ExperimentalMouse {
     private float aFloat;
     private double aDouble;
     private String string;
+    private String[] array;
+    private List<String> list;
 
     public ExperimentalMouse(
             byte aByte,
@@ -18,7 +22,9 @@ public class ExperimentalMouse {
             long aLong,
             float aFloat,
             double aDouble,
-            String string
+            String string,
+            String[] array,
+            List<String> list
     ) {
         this.aByte = aByte;
         this.anInt = anInt;
@@ -27,6 +33,8 @@ public class ExperimentalMouse {
         this.aFloat = aFloat;
         this.aDouble = aDouble;
         this.string = string;
+        this.array = array;
+        this.list = list;
     }
 
     public static ExperimentalMouse createDefault() {
@@ -37,7 +45,9 @@ public class ExperimentalMouse {
                 356596L,
                 8786784F,
                 515234D,
-                "default"
+                "default",
+                new String[]{"default1", "default2"},
+                Arrays.asList("default3", "default4")
         );
     }
 
@@ -52,67 +62,15 @@ public class ExperimentalMouse {
                 aLong == that.aLong &&
                 Float.compare(that.aFloat, aFloat) == 0 &&
                 Double.compare(that.aDouble, aDouble) == 0 &&
-                Objects.equals(string, that.string);
+                Objects.equals(string, that.string) &&
+                Arrays.equals(array, that.array) &&
+                Objects.equals(list, that.list);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(aByte, anInt, aShort, aLong, aFloat, aDouble, string);
-    }
-
-    public byte getaByte() {
-        return aByte;
-    }
-
-    public void setaByte(byte aByte) {
-        this.aByte = aByte;
-    }
-
-    public int getAnInt() {
-        return anInt;
-    }
-
-    public void setAnInt(int anInt) {
-        this.anInt = anInt;
-    }
-
-    public short getaShort() {
-        return aShort;
-    }
-
-    public void setaShort(short aShort) {
-        this.aShort = aShort;
-    }
-
-    public long getaLong() {
-        return aLong;
-    }
-
-    public void setaLong(long aLong) {
-        this.aLong = aLong;
-    }
-
-    public float getaFloat() {
-        return aFloat;
-    }
-
-    public void setaFloat(float aFloat) {
-        this.aFloat = aFloat;
-    }
-
-    public double getaDouble() {
-        return aDouble;
-    }
-
-    public void setaDouble(double aDouble) {
-        this.aDouble = aDouble;
-    }
-
-    public String getString() {
-        return string;
-    }
-
-    public void setString(String string) {
-        this.string = string;
+        int result = Objects.hash(aByte, anInt, aShort, aLong, aFloat, aDouble, string, list);
+        result = 31 * result + Arrays.hashCode(array);
+        return result;
     }
 }
