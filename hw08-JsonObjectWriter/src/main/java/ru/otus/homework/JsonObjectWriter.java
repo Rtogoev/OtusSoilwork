@@ -5,6 +5,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 public class JsonObjectWriter {
 
@@ -13,7 +14,7 @@ public class JsonObjectWriter {
             return null;
         }
         if (object.getClass().getSimpleName().equals("String")) {
-            return object.toString();
+            return (String) object;
         }
 
         if (object.getClass().getSuperclass().getSimpleName().equals("Number")) {
@@ -25,8 +26,19 @@ public class JsonObjectWriter {
         if (object.getClass().getSuperclass().getSimpleName().equals("Object")) {
             return toJsonObject(object);
         }
-
+        if (object.getClass().getSuperclass().getSuperclass().getSimpleName().contains("Collection")) {
+            return toJsonCollection(object);
+        }
         return null;
+    }
+
+    private <T> String toJsonCollection(T object) {
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        Collection collection = (Collection) object;
+        for (Object item : collection) {
+            arrayBuilder.add(toJson(item));
+        }
+        return arrayBuilder.build().toString();
     }
 
     private <T> String toJsonArray(T object) {
@@ -47,7 +59,10 @@ public class JsonObjectWriter {
         try {
             for (Field field : object.getClass().getDeclaredFields()) {
                 field.setAccessible(true);
-                builder.add(field.getName(), toJson(field.get(object)));
+                builder.add(
+                        field.getName(),
+                        toJson(field.get(object))
+                );
                 field.setAccessible(false);
             }
         } catch (IllegalAccessException e) {
