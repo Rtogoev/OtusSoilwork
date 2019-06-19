@@ -1,13 +1,9 @@
 package ru.otus.homework;
 
 import ru.otus.homework.atm.ATM;
-import ru.otus.homework.bills.Bill;
-import ru.otus.homework.cassettes.Cassette;
 import ru.otus.homework.dispensers.DispenserImpl;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DepartmentATM {
     private List<ATM> atms;
@@ -18,15 +14,12 @@ public class DepartmentATM {
 
         backUp = new InMemoryDB();
         for (ATM atm : atms) {
-            Map<Bill, Cassette> startState = new HashMap<>();
-            Map<Bill, Cassette> cassettes = atm.getDispenser().getCassettes();
-            cassettes.forEach(
-                    (bill, cassette) -> startState.put(
-                            bill,
-                            new Cassette(cassette.getAmount())
+            atm.updateStartState();
+            backUp.create(
+                    new AtmMemento(
+                            atm.getStartState()
                     )
             );
-            backUp.create(new StartStateMemento(startState));
         }
     }
 

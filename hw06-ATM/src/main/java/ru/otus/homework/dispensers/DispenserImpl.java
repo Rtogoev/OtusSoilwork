@@ -11,9 +11,27 @@ import java.util.TreeSet;
 
 public class DispenserImpl implements Dispenser {
     private final Map<Bill, Cassette> cassettes;
+    private final Map<Bill, Cassette> startState;
 
     public DispenserImpl(Map<Bill, Cassette> cassettes) {
         this.cassettes = cassettes;
+        startState = new HashMap<>();
+        updateStartState();
+    }
+
+    @Override
+    public Map<Bill, Cassette> getStartState() {
+        return startState;
+    }
+
+    @Override
+    public void updateStartState() {
+        cassettes.forEach(
+                (bill, cassette) -> startState.put(
+                        bill,
+                        new Cassette(cassette.getAmount())
+                )
+        );
     }
 
     @Override

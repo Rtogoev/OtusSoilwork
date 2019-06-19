@@ -5,11 +5,11 @@ import ru.otus.homework.cassettes.Cassette;
 
 import java.util.Map;
 
-public class StartStateMemento {
+public class AtmMemento implements Memento {
 
     private Map<Bill, Cassette> startState;
 
-    public StartStateMemento(Map<Bill, Cassette> startState) {
+    public AtmMemento(Map<Bill, Cassette> startState) {
         this.startState = startState;
     }
 

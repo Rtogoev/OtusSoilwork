@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryDB implements DB {
-    private List<StartStateMemento> data;
+    private List<AtmMemento> data;
 
     public InMemoryDB() {
         this.data = new ArrayList<>();
     }
 
     @Override
-    public void create(StartStateMemento startStateMemento) {
-        data.add(startStateMemento);
+    public void create(AtmMemento atmMemento) {
+        data.add(atmMemento);
     }
 
     @Override
-    public StartStateMemento read(int index) {
+    public AtmMemento read(int index) {
         return data.get(index);
     }
 }

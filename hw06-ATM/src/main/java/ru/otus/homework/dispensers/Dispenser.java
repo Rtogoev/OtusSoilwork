@@ -8,6 +8,10 @@ import ru.otus.homework.cassettes.EmptyCassetteException;
 import java.util.Map;
 
 public interface Dispenser {
+    Map<Bill, Cassette> getStartState();
+
+    void updateStartState();
+
     int putIntoBuckets(Map<Bill, Integer> bills);
 
     Map<Bill, Integer> getBills(int sum) throws CashOutException, EmptyCassetteException;
