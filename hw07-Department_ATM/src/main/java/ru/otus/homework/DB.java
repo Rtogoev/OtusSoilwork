@@ -1,7 +1,7 @@
 package ru.otus.homework;
 
 public interface DB {
-    void create(AtmMemento atmMemento);
+    void create(Memento memento);
 
-    AtmMemento read(int index);
+    Memento read(int index);
 }

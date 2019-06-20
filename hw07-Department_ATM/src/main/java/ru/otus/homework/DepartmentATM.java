@@ -11,7 +11,19 @@ public class DepartmentATM {
 
     public DepartmentATM(List<ATM> atms) {
         this.atms = atms;
-        atms.forEach(ATM::updateStartState);
+        updateDB();
+    }
+
+    private void updateDB() {
+        this.backUp = new InMemoryDB();
+        for (ATM atm : atms) {
+            atm.updateStartState();
+            backUp.create(
+                    new AtmMemento(
+                            atm.getStartState()
+                    )
+            );
+        }
     }
 
     public int getBalance() {
@@ -25,9 +37,10 @@ public class DepartmentATM {
             ATM atm = atms.get(i);
             atm.setDispenser(
                     new DispenserImpl(
-                            atm.getStartState()
+                            backUp.read(i).getStartState()
                     )
             );
         }
+        updateDB();
     }
 }
