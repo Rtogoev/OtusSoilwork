@@ -83,10 +83,13 @@ class DepartmentATMTest {
 
     @Test
     void backUp() throws EmptyCassetteException, CashOutException {
-        for (ATM atm : atms) {
-            atm.cashOut(atmBalance);
+        for (int i = 0; i < 10; i++) {
+            for (ATM atm : atms) {
+                atm.cashOut(atmBalance);
+            }
+            departmentATM.backUp();
+
+            assertEquals(expectedDepartmentAtmBalance, departmentATM.getBalance());
         }
-        departmentATM.backUp();
-        assertEquals(expectedDepartmentAtmBalance, departmentATM.getBalance());
     }
 }
