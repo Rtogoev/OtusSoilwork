@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -102,13 +101,11 @@ class JsonObjectWriterTest {
         List<ExperimentalMouse> expected = new ArrayList<>();
         expected.add(ExperimentalMouse.createDefault());
         expected.add(ExperimentalMouse.createDefault());
-        assertEquals(
-                expected,
-                gson.fromJson(
-                        jsonObjectWriter.toJson(expected),
-                        Collection.class
-                )
+        List<ExperimentalMouse> actual = gson.fromJson(
+                jsonObjectWriter.toJson(expected),
+                List.class
         );
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -174,12 +171,13 @@ class JsonObjectWriterTest {
     @Test
     void toJsonObject() {
         ExperimentalMouse expected = ExperimentalMouse.createDefault();
+        ExperimentalMouse actual = gson.fromJson(
+                jsonObjectWriter.toJson(expected),
+                ExperimentalMouse.class
+        );
         assertEquals(
                 expected,
-                gson.fromJson(
-                        jsonObjectWriter.toJson(expected),
-                        ExperimentalMouse.class
-                )
+                actual
         );
     }
 
