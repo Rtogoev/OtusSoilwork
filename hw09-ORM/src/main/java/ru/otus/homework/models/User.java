@@ -1,4 +1,6 @@
-package ru.otus.homework.model;
+package ru.otus.homework.models;
+
+import ru.otus.homework.annotations.Id;
 
 import java.util.Objects;
 
