@@ -9,14 +9,14 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>hw01-maven</module>
-        <module>hw02-DIYarrayList</module>
-        <module>hw03-DIYtestFramework</module>
-        <module>hw04-AutoLog</module>
-        <module>hw05-gc</module>
-        <module>hw06-ATM</module>
-        <module>hw07-Department_ATM</module>
-        <module>hw08-JsonObjectWriter</module>
+<!--        <module>hw01-maven</module>-->
+<!--        <module>hw02-DIYarrayList</module>-->
+<!--        <module>hw03-DIYtestFramework</module>-->
+<!--        <module>hw04-AutoLog</module>-->
+<!--        <module>hw05-gc</module>-->
+<!--        <module>hw06-ATM</module>-->
+<!--        <module>hw07-Department_ATM</module>-->
+<!--        <module>hw08-JsonObjectWriter</module>-->
         <module>hw09-ORM</module>
     </modules>
 

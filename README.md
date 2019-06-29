@@ -163,7 +163,7 @@ void createOrUpdate(T objectData); // опционально.
 
 Создайте еще одну таблицу Account:
 • no bigint(20) NOT NULL auto_increment
-• type varchar(255)
+• name varchar(255)
 • rest number
 
 Создайте для этой таблицы класс Account и проверьте работу JdbcTemplate на этом классе.

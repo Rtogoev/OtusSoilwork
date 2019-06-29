@@ -6,11 +6,11 @@ import java.util.Objects;
 
 public class User {
     @Id
-    private int id;
+    private Long id;
     private String name;
     private int age;
 
-    public User(int id, String name, int age) {
+    public User(Long id, String name, int age) {
         this.id = id;
         this.name = name;
         this.age = age;
@@ -40,11 +40,11 @@ public class User {
         return Objects.hash(id, name, age);
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
