@@ -60,7 +60,7 @@ public class JsonObjectWriter {
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         Collection collection = (Collection) object;
         for (Object item : collection) {
-            arrayBuilder.add(toJson(item));
+            arrayBuilder.add(toJsonValue(item));
         }
         return arrayBuilder.build();
     }
@@ -70,7 +70,7 @@ public class JsonObjectWriter {
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         for (int i = 0; i < Array.getLength(object); i++) {
             Object item = Array.get(object, i);
-            arrayBuilder.add(toJson(item));
+            arrayBuilder.add(toJsonValue(item));
         }
         return arrayBuilder.build();
     }
@@ -85,7 +85,7 @@ public class JsonObjectWriter {
                 field.setAccessible(true);
                 builder.add(
                         field.getName(),
-                        toJson(field.get(object))
+                        toJsonValue(field.get(object))
                 );
                 field.setAccessible(false);
             }

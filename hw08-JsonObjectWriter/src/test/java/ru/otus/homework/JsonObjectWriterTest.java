@@ -101,11 +101,9 @@ class JsonObjectWriterTest {
         List<ExperimentalMouse> expected = new ArrayList<>();
         expected.add(ExperimentalMouse.createDefault());
         expected.add(ExperimentalMouse.createDefault());
-        List<ExperimentalMouse> actual = gson.fromJson(
-                jsonObjectWriter.toJson(expected),
-                List.class
-        );
-        assertEquals(expected, actual);
+        String expectdJson = gson.toJson(expected);
+        String atualJson = jsonObjectWriter.toJson(expected);
+        assertEquals(expectdJson,atualJson);
     }
 
     @Test
