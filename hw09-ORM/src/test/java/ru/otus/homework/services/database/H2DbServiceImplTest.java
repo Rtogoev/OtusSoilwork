@@ -38,7 +38,7 @@ class H2DbServiceImplTest {
     @Test
     void selectRow() throws SQLException, IllegalAccessException {
         long userId = h2DbService.insertRow("User", reflectionService.getFieldsExceptIdAsParams(expected));
-        User actual = h2DbService.selectRow("select * from User", userId, resultSet -> {
+        User actual = h2DbService.selectRow("User", userId, resultSet -> {
                     try {
                         if (resultSet.next()) {
                             return new User(
@@ -60,8 +60,10 @@ class H2DbServiceImplTest {
     @Order(3)
     void updateRow() throws SQLException, IllegalAccessException {
         long userId = h2DbService.insertRow("User", reflectionService.getFieldsExceptIdAsParams(expected));
-        h2DbService.updateRow();
-        User actual = h2DbService.selectRow("select * from User", userId, resultSet -> {
+        expected.setAge((int) Math.random());
+        expected.setName(String.valueOf(Math.random()));
+        h2DbService.updateRow("User",reflectionService.getFieldsExceptIdAsParams(expected), expected.getId());
+        User actual = h2DbService.selectRow("User", userId, resultSet -> {
                     try {
                         if (resultSet.next()) {
                             return new User(

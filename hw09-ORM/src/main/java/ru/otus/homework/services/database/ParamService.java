@@ -18,4 +18,20 @@ public class ParamService {
         }
         return namesString.toString();
     }
+
+    public String getUpdateParamsString(List<Param> params) {
+        StringBuilder updateParamsString = new StringBuilder();
+        updateParamsString.append(params.get(0).getName())
+                .append(" = '")
+                .append(params.get(0).getValue())
+                .append("'");
+        for (int i = 1; i < params.size(); i++) {
+            updateParamsString.append(", ")
+                    .append(params.get(i).getName())
+                    .append(" = '")
+                    .append(params.get(i).getValue())
+                    .append("'");
+        }
+        return updateParamsString.toString();
+    }
 }

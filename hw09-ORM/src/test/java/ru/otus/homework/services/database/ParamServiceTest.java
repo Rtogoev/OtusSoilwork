@@ -14,22 +14,29 @@ class ParamServiceTest {
     @BeforeEach
     void setUp() {
         testParams = new ArrayList<>();
-        testParams.add(new Param("one","1"));
-        testParams.add(new Param("two","2"));
-        testParams.add(new Param("three","3"));
+        testParams.add(new Param("one", "1"));
+        testParams.add(new Param("two", "2"));
+        testParams.add(new Param("three", "3"));
     }
 
     @Test
     void getValuesString() {
         String expectedValuesString = "1, 2, 3";
         String actualValuesString = paramService.getValuesString(testParams);
-        Assertions.assertEquals(expectedValuesString,actualValuesString);
+        Assertions.assertEquals(expectedValuesString, actualValuesString);
     }
 
     @Test
-    void getTypesString() {
-        String expectedTypesString = "one, two, three";
+    void getNamesString() {
+        String expectedNamesString = "one, two, three";
         String actualTypesString = paramService.getNamesString(testParams);
-        Assertions.assertEquals(expectedTypesString,actualTypesString);
+        Assertions.assertEquals(expectedNamesString, actualTypesString);
+    }
+
+    @Test
+    void getUpdateParamsString() {
+        String expectedUpdateParamsString = "one = '1', two = '2', three = '3'";
+        String actualUpdateParamsString = paramService.getUpdateParamsString(testParams);
+        Assertions.assertEquals(expectedUpdateParamsString, actualUpdateParamsString);
     }
 }

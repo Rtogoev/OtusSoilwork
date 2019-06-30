@@ -24,7 +24,7 @@ public class JdbcTemplate {
     public <T> void update(T objectData) throws IllegalAccessException {
         String tableName = reflectionService.getClassName(objectData);
         List<Param> params = reflectionService.getFieldsExceptIdAsParams(objectData);
-        dbService.updateRow(tableName, params);
+//        dbService.updateRow(tableName, params, );
     }
 
     public <T> T load(long id, Class clazz) {
