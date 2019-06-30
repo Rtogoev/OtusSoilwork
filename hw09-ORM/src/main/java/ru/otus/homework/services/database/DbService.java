@@ -11,7 +11,7 @@ public interface DbService {
 
     void execute(String sqlExpression) throws SQLException;
 
-    void updateRow(String tableName, List<Param> fields);
+    void updateRow(String tableName, List<Param> fields, long id) throws SQLException;
 
     <T> T selectRow(String sql, long id, Function<ResultSet, T> rsHandler) throws SQLException;
 
