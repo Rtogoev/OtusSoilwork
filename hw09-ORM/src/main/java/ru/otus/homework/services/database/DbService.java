@@ -7,13 +7,13 @@ import java.util.function.Function;
 
 public interface DbService {
 
-    long insertRow(String sql, List<Param> params) throws SQLException;
+    long insertRow(String tableName, List<Param> params) throws SQLException;
 
     void execute(String sqlExpression) throws SQLException;
 
     void updateRow(String tableName, List<Param> fields, long id) throws SQLException;
 
-    <T> T selectRow(String sql, long id, Function<ResultSet, T> rsHandler) throws SQLException;
+    <T> T selectRow(String tableName, long id, Function<ResultSet, T> rsHandler) throws SQLException;
 
     void close() throws SQLException;
 }

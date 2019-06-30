@@ -18,28 +18,29 @@ public class JdbcTemplate {
     public <T> long create(T objectData) throws SQLException, IllegalAccessException {
         String tableName = reflectionService.getClassName(objectData);
         List<Param> params = reflectionService.getFieldsExceptIdAsParams(objectData);
-        return dbService.insertRow(tableName,params);
+        return dbService.insertRow(tableName, params);
     }
 
-    public <T> void update(T objectData) throws IllegalAccessException {
+    public <T> void update(T objectData) throws IllegalAccessException, SQLException {
         String tableName = reflectionService.getClassName(objectData);
         List<Param> params = reflectionService.getFieldsExceptIdAsParams(objectData);
-//        dbService.updateRow(tableName, params, );
+        long id = reflectionService.getId(objectData);
+        dbService.updateRow(tableName, params, id);
     }
 
-    public <T> T load(long id, Class clazz) {
-//        Optional<User> user = dbService.selectRow("select id, name from user where id  = ?", id, resultSet -> {
-//            try {
-//                if (resultSet.next()) {
-//                    return new User(resultSet.getLong("id"), resultSet.getString("name"));
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//            return null;
-//        });
-//        System.out.println("user:" + user);
-//        return user;
-        return null;
+    public <T> T load(long id, Class clazz) throws SQLException {
+        T result = dbService.selectRow(clazz.getSimpleName(), id, resultSet -> {
+                    try {
+                        if (resultSet.next()) {
+                            return reflectionService.getInstanse(clazz, resultSet);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+        );
+        System.out.println("result:" + result);
+        return result;
     }
 }

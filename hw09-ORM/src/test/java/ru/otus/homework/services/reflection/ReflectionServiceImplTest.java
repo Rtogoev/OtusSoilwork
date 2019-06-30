@@ -27,10 +27,10 @@ class ReflectionServiceImplTest {
     }
 
     @Test
-    void getTypeValueMap() throws IllegalAccessException {
+    void getFieldsExceptIdAsParams() throws IllegalAccessException {
         List<Param> expected = new ArrayList<>();
-        expected.add(new Param("name", "2"));
-        expected.add(new Param("age", "3"));
+        expected.add(new Param("name", "2", "String"));
+        expected.add(new Param("age", "3", "int"));
         List<Param> actual = reflectionService.getFieldsExceptIdAsParams(testUser);
         Assertions.assertEquals(expected, actual);
     }

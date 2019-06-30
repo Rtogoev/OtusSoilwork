@@ -5,10 +5,12 @@ import java.util.Objects;
 public class Param {
     private String name;
     private String value;
+    private String type;
 
-    public Param(String name, String value) {
+    public Param(String name, String value, String type) {
         this.name = name;
         this.value = value;
+        this.type = type;
     }
 
     @Override
@@ -39,5 +41,13 @@ public class Param {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
