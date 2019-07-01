@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 import ru.otus.homework.models.User;
 import ru.otus.homework.services.reflection.ReflectionService;
 import ru.otus.homework.services.reflection.ReflectionServiceImpl;
-import ru.otus.homework.services.testservices.UserTestService;
+import ru.otus.homework.services.testservices.TestService;
 
 import java.sql.SQLException;
 
 class H2DbServiceImplTest {
     private H2DbServiceImpl h2DbService;
     private ReflectionService reflectionService;
-    private UserTestService userTestService;
+    private TestService testService;
     private User expected;
 
     @AfterEach
@@ -24,13 +24,13 @@ class H2DbServiceImplTest {
 
     @BeforeEach
     void setUp() throws SQLException {
-        userTestService = new UserTestService(this);
+        testService = new TestService(this);
         h2DbService = new H2DbServiceImpl();
         reflectionService = new ReflectionServiceImpl();
         expected = new User(
                 1L,
-                userTestService.generateName(),
-                userTestService.generateAge()
+                testService.generateString(),
+                testService.generateNumeric()
         );
         h2DbService.execute("create table user(id long auto_increment, name varchar(50),  age int(3))");
     }
