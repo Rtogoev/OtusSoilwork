@@ -6,11 +6,11 @@ import java.util.function.Function;
 
 import static java.sql.DriverManager.getConnection;
 
-public class H2DbServiceImpl implements DbService {
+public class H2SQLService implements SQLService {
     private Connection connection;
     private ParamService paramService;
 
-    public H2DbServiceImpl() throws SQLException {
+    public H2SQLService() throws SQLException {
         connection = getConnection("jdbc:h2:mem:");
         connection.setAutoCommit(true);
         paramService = new ParamService();

@@ -19,14 +19,14 @@ class JdbcTemplateTest {
     @BeforeEach
     void setUp() throws SQLException {
         testService = new TestService(this);
-        DbService h2DbService = new H2DbServiceImpl();
-        h2DbService.execute("create table user(id long auto_increment, name varchar(50),  age int(3))");
-        h2DbService.execute(
+        SQLService h2SQLService = new H2SQLService();
+        h2SQLService.execute("create table user(id long auto_increment, name varchar(50),  age int(3))");
+        h2SQLService.execute(
                 "create table account(id bigint(20) not null auto_increment, name varchar(255),  rest number)"
         );
-        jdbcTemplate = new JdbcTemplate(
+        jdbcTemplate = new H2JdbcTemplate(
                 new ReflectionServiceImpl(),
-                h2DbService
+                h2SQLService
         );
         expectedUser = new User(
                 1L,

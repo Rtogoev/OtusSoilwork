@@ -12,8 +12,8 @@ import ru.otus.homework.services.testservices.TestService;
 
 import java.sql.SQLException;
 
-class H2DbServiceImplTest {
-    private H2DbServiceImpl h2DbService;
+class H2SQLServiceTest {
+    private H2SQLService h2DbService;
     private ReflectionService reflectionService;
     private TestService testService;
     private User expected;
@@ -26,7 +26,7 @@ class H2DbServiceImplTest {
     @BeforeEach
     void setUp() throws SQLException {
         testService = new TestService(this);
-        h2DbService = new H2DbServiceImpl();
+        h2DbService = new H2SQLService();
         reflectionService = new ReflectionServiceImpl();
         expected = new User(
                 1L,
