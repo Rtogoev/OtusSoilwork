@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.otus.homework.annotations.Id;
 import ru.otus.homework.models.User;
 import ru.otus.homework.services.reflection.ReflectionService;
 import ru.otus.homework.services.reflection.ReflectionServiceImpl;
@@ -37,14 +38,14 @@ class H2DbServiceImplTest {
 
     @Test
     void insertRow() throws IllegalAccessException, SQLException {
-        long userId = h2DbService.insertRow("User", reflectionService.getFieldsExceptIdAsParams(expected));
+        long userId = h2DbService.insertRow("User", reflectionService.getFieldsExceptIdAsParamsExceptAnnotated(expected, Id.class));
         Assertions.assertEquals(1, userId);
     }
 
 
     @Test
     void selectRow() throws SQLException, IllegalAccessException {
-        long userId = h2DbService.insertRow("User", reflectionService.getFieldsExceptIdAsParams(expected));
+        long userId = h2DbService.insertRow("User", reflectionService.getFieldsExceptIdAsParamsExceptAnnotated(expected, Id.class));
         User actual = h2DbService.selectRow("User", userId, resultSet -> {
                     try {
                         if (resultSet.next()) {
@@ -65,10 +66,10 @@ class H2DbServiceImplTest {
 
     @Test
     void updateRow() throws SQLException, IllegalAccessException {
-        long userId = h2DbService.insertRow("User", reflectionService.getFieldsExceptIdAsParams(expected));
+        long userId = h2DbService.insertRow("User", reflectionService.getFieldsExceptIdAsParamsExceptAnnotated(expected, Id.class));
         expected.setAge((int) Math.random());
         expected.setName(String.valueOf(Math.random()));
-        h2DbService.updateRow("User", reflectionService.getFieldsExceptIdAsParams(expected), expected.getId());
+        h2DbService.updateRow("User", reflectionService.getFieldsExceptIdAsParamsExceptAnnotated(expected, Id.class), expected.getId());
         User actual = h2DbService.selectRow("User", userId, resultSet -> {
                     try {
                         if (resultSet.next()) {

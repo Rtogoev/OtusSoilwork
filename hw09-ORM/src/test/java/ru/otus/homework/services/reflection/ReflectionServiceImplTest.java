@@ -3,6 +3,7 @@ package ru.otus.homework.services.reflection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.otus.homework.annotations.Id;
 import ru.otus.homework.models.User;
 import ru.otus.homework.services.database.Param;
 
@@ -31,7 +32,7 @@ class ReflectionServiceImplTest {
         List<Param> expected = new ArrayList<>();
         expected.add(new Param("name", "2", "String"));
         expected.add(new Param("age", "3", "int"));
-        List<Param> actual = reflectionService.getFieldsExceptIdAsParams(testUser);
+        List<Param> actual = reflectionService.getFieldsExceptIdAsParamsExceptAnnotated(testUser, Id.class);
         Assertions.assertEquals(expected, actual);
     }
 }
