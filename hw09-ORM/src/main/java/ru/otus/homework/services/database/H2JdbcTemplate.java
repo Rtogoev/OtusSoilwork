@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.List;
 
-public class H2JdbcTemplate implements JdbcTemplate {
+public class H2JdbcTemplate implements DbTemplate {
 
     private ReflectionService reflectionService;
     private SQLService SQLService;

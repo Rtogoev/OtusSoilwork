@@ -11,7 +11,7 @@ import ru.otus.homework.services.testservices.TestService;
 import java.sql.SQLException;
 
 class JdbcTemplateTest {
-    private JdbcTemplate jdbcTemplate;
+    private DbTemplate jdbcTemplate;
     private TestService testService;
     private User expectedUser;
     private Account expectedAccount;

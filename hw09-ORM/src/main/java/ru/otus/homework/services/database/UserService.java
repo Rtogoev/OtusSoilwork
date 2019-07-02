@@ -5,9 +5,9 @@ import ru.otus.homework.models.User;
 import java.sql.SQLException;
 
 public class UserService implements DbService<User, Long> {
-    private JdbcTemplate jdbcTemplate;
+    private DbTemplate jdbcTemplate;
 
-    public UserService(JdbcTemplate jdbcTemplate) {
+    public UserService(DbTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
