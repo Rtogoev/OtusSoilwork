@@ -16,6 +16,7 @@
         <module>hw05-gc</module>
         <module>hw06-ATM</module>
         <module>hw07-Department_ATM</module>
+        <module>hw08-JsonObjectWriter</module>
     </modules>
 
     <properties>
