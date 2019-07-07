@@ -1,37 +1,41 @@
 package ru.otus.homework.model;
 
-import java.util.Objects;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import javax.persistence.*;
+import java.util.Set;
+
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String name;
-    private int age;
-    private AddressDataSet addressDataSet;
-    private PhoneDataSet phoneDataSet;
 
-    public User(Long id, String name, int age, AddressDataSet addressDataSet, PhoneDataSet phoneDataSet) {
-        this.id = id;
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "age")
+    private int age;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "address")
+    private AddressDataSet addressDataSet;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = "phone_number")
+    private Set<PhoneDataSet> phoneDataSet;
+
+    public User() {
+    }
+
+    public User(String name, int age, AddressDataSet addressDataSet, Set<PhoneDataSet> phoneDataSet) {
         this.name = name;
         this.age = age;
         this.addressDataSet = addressDataSet;
         this.phoneDataSet = phoneDataSet;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return age == user.age &&
-                Objects.equals(id, user.id) &&
-                Objects.equals(name, user.name) &&
-                Objects.equals(addressDataSet, user.addressDataSet) &&
-                Objects.equals(phoneDataSet, user.phoneDataSet);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, age, addressDataSet, phoneDataSet);
     }
 
     @Override
@@ -77,11 +81,11 @@ public class User {
         this.addressDataSet = addressDataSet;
     }
 
-    public PhoneDataSet getPhoneDataSet() {
+    public Set<PhoneDataSet> getPhoneDataSet() {
         return phoneDataSet;
     }
 
-    public void setPhoneDataSet(PhoneDataSet phoneDataSet) {
+    public void setPhoneDataSet(Set<PhoneDataSet> phoneDataSet) {
         this.phoneDataSet = phoneDataSet;
     }
 }

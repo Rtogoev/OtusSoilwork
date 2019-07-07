@@ -77,16 +77,18 @@ class UserServiceTest {
     @Test
     void update() throws SQLException, IllegalAccessException {
         userService.create(expectedUser);
+        Long id = expectedUser.getId();
         expectedUser = new User(
-                "test",
+                "update",
                 testService.generateNumeric(),
-                new AddressDataSet("test"),
+                new AddressDataSet("update"),
                 Collections.singleton(
-                        new PhoneDataSet("test")
+                        new PhoneDataSet("update")
                 )
         );
+        expectedUser.setId(id);
         userService.update(expectedUser);
         User actualUser = userService.load(expectedUser.getId());
-        Assertions.assertEquals(expectedUser, actualUser);
+        assertEquals(expectedUser, actualUser);
     }
 }
