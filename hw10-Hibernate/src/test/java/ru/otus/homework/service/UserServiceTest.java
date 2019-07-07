@@ -1,5 +1,11 @@
 package ru.otus.homework.service;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +16,7 @@ import ru.otus.homework.model.User;
 import ru.otus.homework.services.database.DbService;
 
 import java.sql.SQLException;
+import java.util.Collections;
 
 class UserServiceTest {
 
@@ -19,46 +26,63 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
+        Configuration configuration = new Configuration()
+                .configure("hibernate.cfg.xml");
+        StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                .applySettings(configuration.getProperties())
+                .build();
+
+        Metadata metadata = new MetadataSources(serviceRegistry)
+                .addAnnotatedClass(AddressDataSet.class)
+                .addAnnotatedClass(PhoneDataSet.class)
+                .addAnnotatedClass(User.class)
+                .getMetadataBuilder()
+                .build();
+
+        SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
         testService = new TestService(this);
         expectedUser = new User(
-                1L,
-                testService.generateString(),
+                "test",
                 testService.generateNumeric(),
-                new AddressDataSet(
-                        testService.generateString()
-                ),
-                new PhoneDataSet(
-                        testService.generateString()
+                new AddressDataSet("test"),
+                Collections.singleton(
+                        new PhoneDataSet("test")
                 )
         );
-        userService = new UserService(new HibernateTemplate());
+        userService = new UserService(new HibernateTemplate(sessionFactory));
     }
 
     @Test
     void create() throws SQLException, IllegalAccessException {
-        long actualId = userService.create(expectedUser);
-        Assertions.assertEquals(expectedUser.getId(), actualId);
+        userService.create(expectedUser);
+        Assertions.assertEquals(1L, expectedUser.getId());
     }
 
     @Test
     void load() throws SQLException, IllegalAccessException {
-        long id = userService.create(expectedUser);
-        User actualUser = userService.load(id);
-        Assertions.assertEquals(expectedUser, actualUser);
+        userService.create(expectedUser);
+        User actualUser = userService.load(expectedUser.getId());
+        assertEquals(expectedUser, actualUser);
+    }
+
+    private void assertEquals(User expectedUser, User actualUser) {
+        Assertions.assertEquals(expectedUser.getId(),actualUser.getId());
+        Assertions.assertEquals(expectedUser.getPhoneDataSet(),actualUser.getPhoneDataSet());
+        Assertions.assertEquals(expectedUser.getAddressDataSet().getId(),actualUser.getAddressDataSet().getId());
+        Assertions.assertEquals(expectedUser.getAddressDataSet().getStreet(),actualUser.getAddressDataSet().getStreet());
+        Assertions.assertEquals(expectedUser.getAge(),actualUser.getAge());
+        Assertions.assertEquals(expectedUser.getName(),actualUser.getName());
     }
 
     @Test
     void update() throws SQLException, IllegalAccessException {
         userService.create(expectedUser);
         expectedUser = new User(
-                expectedUser.getId(),
-                testService.generateString(),
+                "test",
                 testService.generateNumeric(),
-                new AddressDataSet(
-                        testService.generateString()
-                ),
-                new PhoneDataSet(
-                        testService.generateString()
+                new AddressDataSet("test"),
+                Collections.singleton(
+                        new PhoneDataSet("test")
                 )
         );
         userService.update(expectedUser);
