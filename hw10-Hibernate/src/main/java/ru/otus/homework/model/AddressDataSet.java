@@ -1,20 +1,24 @@
 package ru.otus.homework.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Objects;
 
+@Entity(name = "address")
 public class AddressDataSet {
-    private String string;
+    @Id
+    @GeneratedValue
+    private Long id;
+    @Column(name = "street")
+    private String street;
 
-    public AddressDataSet(String string) {
-        this.string = string;
+    public AddressDataSet() {
     }
 
-    public String getString() {
-        return string;
-    }
-
-    public void setString(String string) {
-        this.string = string;
+    public AddressDataSet(String street) {
+        this.street = street;
     }
 
     @Override
@@ -22,18 +26,36 @@ public class AddressDataSet {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AddressDataSet that = (AddressDataSet) o;
-        return Objects.equals(string, that.string);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(street, that.street);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(string);
+        return Objects.hash(id, street);
     }
 
     @Override
     public String toString() {
         return "AddressDataSet{" +
-                "string='" + string + '\'' +
+                "id=" + id +
+                ", street='" + street + '\'' +
                 '}';
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
