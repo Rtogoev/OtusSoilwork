@@ -7,5 +7,5 @@ public interface DbTemplate {
 
     <T> void update(T objectData) throws IllegalAccessException, SQLException;
 
-    <T> T load(long id, Class clazz) throws SQLException;
+    <T> T load(long id, Class<T> clazz) throws SQLException;
 }
