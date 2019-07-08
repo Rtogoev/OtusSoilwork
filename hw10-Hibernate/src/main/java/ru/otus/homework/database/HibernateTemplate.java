@@ -35,16 +35,6 @@ public class HibernateTemplate implements DbTemplate {
     @Override
     public <T> T load(long id, Class clazz) {
         Session session = sessionFactory.openSession();
-        new Thread(
-                () -> {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    session.close();
-                }
-        );
         return (T) session.get(clazz, id);
     }
 }

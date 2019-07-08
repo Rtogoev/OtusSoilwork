@@ -1,6 +1,5 @@
 package ru.otus.homework.service;
 
-import org.hibernate.Hibernate;
 import ru.otus.homework.model.User;
 import ru.otus.homework.services.database.DbService;
 import ru.otus.homework.services.database.DbTemplate;
@@ -23,9 +22,7 @@ public class UserService implements DbService<User, Long> {
 
     @Override
     public User load(Long id) throws SQLException {
-        User load = dbTemplate.load(id, User.class);
-        Hibernate.initialize(load.getPhoneDataSet());
-        return load;
+        return dbTemplate.load(id, User.class);
     }
 
     @Override
