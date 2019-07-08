@@ -14,27 +14,24 @@ public class HibernateTemplate implements DbTemplate {
 
     @Override
     public <T> long create(T objectData) {
-        try (Session session = sessionFactory.openSession()) {
+       Session session = sessionFactory.getCurrentSession();
             session.beginTransaction();
             session.save(objectData);
-            System.out.println(">>>>>>>>>>> created:" + objectData);
             session.getTransaction().commit();
-        }
         return 0;
     }
 
     @Override
     public <T> void update(T objectData) {
-        try (Session session = sessionFactory.openSession()) {
+        Session session = sessionFactory.getCurrentSession();
             session.beginTransaction();
             session.update(objectData);
             session.getTransaction().commit();
-        }
     }
 
     @Override
-    public <T> T load(long id, Class clazz) {
-        Session session = sessionFactory.openSession();
-        return (T) session.get(clazz, id);
+    public <T> T load(long id, Class<T> clazz) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(clazz, id);
     }
 }

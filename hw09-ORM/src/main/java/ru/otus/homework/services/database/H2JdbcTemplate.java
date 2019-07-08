@@ -31,7 +31,7 @@ public class H2JdbcTemplate implements DbTemplate {
         SQLService.updateRow(tableName, params, id);
     }
 
-    public <T> T load(long id, Class clazz) throws SQLException {
+    public <T> T load(long id, Class<T> clazz) throws SQLException {
         T result = SQLService.selectRow(clazz.getSimpleName(), id, resultSet -> {
                     try {
                         if (resultSet.next()) {

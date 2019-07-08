@@ -19,7 +19,8 @@ public class User {
     @Column(name = "age")
     private int age;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "address")
     private AddressDataSet addressDataSet;
 

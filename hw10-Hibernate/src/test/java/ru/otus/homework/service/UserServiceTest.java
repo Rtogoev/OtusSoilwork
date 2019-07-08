@@ -9,7 +9,6 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.otus.homework.database.HibernateTemplate;
 import ru.otus.homework.model.AddressDataSet;
 import ru.otus.homework.model.PhoneDataSet;
 import ru.otus.homework.model.User;
@@ -49,7 +48,7 @@ class UserServiceTest {
                         new PhoneDataSet("test")
                 )
         );
-        userService = new UserService(new HibernateTemplate(sessionFactory));
+        userService = new UserService( sessionFactory);
     }
 
     @Test
@@ -66,12 +65,12 @@ class UserServiceTest {
     }
 
     private void assertEquals(User expectedUser, User actualUser) {
-        Assertions.assertEquals(expectedUser.getId(),actualUser.getId());
-        Assertions.assertEquals(expectedUser.getPhoneDataSet(),actualUser.getPhoneDataSet());
-        Assertions.assertEquals(expectedUser.getAddressDataSet().getId(),actualUser.getAddressDataSet().getId());
-        Assertions.assertEquals(expectedUser.getAddressDataSet().getStreet(),actualUser.getAddressDataSet().getStreet());
-        Assertions.assertEquals(expectedUser.getAge(),actualUser.getAge());
-        Assertions.assertEquals(expectedUser.getName(),actualUser.getName());
+        Assertions.assertEquals(expectedUser.getId(), actualUser.getId());
+        Assertions.assertEquals(expectedUser.getPhoneDataSet(), actualUser.getPhoneDataSet());
+        Assertions.assertEquals(expectedUser.getAddressDataSet().getId(), actualUser.getAddressDataSet().getId());
+        Assertions.assertEquals(expectedUser.getAddressDataSet().getStreet(), actualUser.getAddressDataSet().getStreet());
+        Assertions.assertEquals(expectedUser.getAge(), actualUser.getAge());
+        Assertions.assertEquals(expectedUser.getName(), actualUser.getName());
     }
 
     @Test
