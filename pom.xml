@@ -18,6 +18,7 @@
 <!--        <module>hw07-Department_ATM</module>-->
 <!--        <module>hw08-JsonObjectWriter</module>-->
         <module>hw09-ORM</module>
+        <module>hw10-Hibernate</module>
     </modules>
 
     <properties>

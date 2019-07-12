@@ -5,9 +5,9 @@ import ru.otus.homework.models.Account;
 import java.sql.SQLException;
 
 public class AccountService implements DbService<Account, Long> {
-    private JdbcTemplate jdbcTemplate;
+    private DbTemplate jdbcTemplate;
 
-    public AccountService(JdbcTemplate jdbcTemplate) {
+    public AccountService(DbTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
