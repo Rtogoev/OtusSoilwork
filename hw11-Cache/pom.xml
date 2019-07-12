@@ -32,6 +32,12 @@
             <artifactId>hibernate-core</artifactId>
             <version>5.4.1.Final</version>
         </dependency>
+        <dependency>
+            <groupId>Otus</groupId>
+            <artifactId>hw10-Hibernate</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <groupId>Otus</groupId>
