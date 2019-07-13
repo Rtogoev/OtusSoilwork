@@ -9,6 +9,7 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.otus.homework.cache.CacheImpl;
 import ru.otus.homework.model.AddressDataSet;
 import ru.otus.homework.model.PhoneDataSet;
 import ru.otus.homework.model.User;
@@ -48,7 +49,7 @@ class UserServiceTest {
                         new PhoneDataSet("test")
                 )
         );
-        userService = new UserService( sessionFactory);
+        userService = new UserService( sessionFactory, new CacheImpl<User>());
     }
 
     @Test

@@ -1,15 +1,14 @@
 package ru.otus.homework.cache;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.otus.homework.TestService;
 import ru.otus.homework.model.AddressDataSet;
 import ru.otus.homework.model.PhoneDataSet;
 import ru.otus.homework.model.User;
+import ru.otus.homework.service.TestService;
 
 import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CacheImplTest {
     private Cache<User> cache;
@@ -34,18 +33,6 @@ class CacheImplTest {
     void put_get() {
         cache.put(expectedUser);
         User actualUser = cache.get(expectedUser);
-        assertEquals(expectedUser, actualUser);
-    }
-
-    @Test
-    void getHitCount() {
-    }
-
-    @Test
-    void getMissCount() {
-    }
-
-    @Test
-    void dispose() {
+        Assertions.assertEquals(expectedUser, actualUser);
     }
 }

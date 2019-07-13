@@ -19,7 +19,6 @@
 <!--        <module>hw08-JsonObjectWriter</module>-->
         <module>hw09-ORM</module>
         <module>hw10-Hibernate</module>
-        <module>hw11-Cache</module>
     </modules>
 
     <properties>

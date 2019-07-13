@@ -3,6 +3,7 @@ package ru.otus.homework.cache;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class CacheImpl<T> implements Cache<T> {
     private final Map<T, SoftReference<T>> referenceSet;
@@ -18,22 +19,20 @@ public class CacheImpl<T> implements Cache<T> {
 
     @Override
     public T get(T key) {
-        return referenceSet.get(key)
-                .get();
+        SoftReference<T> t = referenceSet.get(key);
+        if (t == null) {
+            return null;
+        }
+        return t.get();
     }
 
     @Override
-    public int getHitCount() {
-        return 0;
+    public void remove(T key) {
+        referenceSet.remove(key);
     }
 
     @Override
-    public int getMissCount() {
-        return 0;
-    }
-
-    @Override
-    public void dispose() {
-
+    public Set<T> getAll() {
+        return referenceSet.keySet();
     }
 }

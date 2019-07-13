@@ -1,14 +1,14 @@
 package ru.otus.homework.cache;
 
+import java.util.Set;
+
 public interface Cache<T> {
 
     void put(T value);
 
     T get(T key);
 
-    int getHitCount();
+    void remove(T key);
 
-    int getMissCount();
-
-    void dispose();
+    Set<T> getAll();
 }
