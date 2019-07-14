@@ -11,10 +11,10 @@ import ru.otus.homework.service.TestService;
 import java.util.Collections;
 
 class CacheImplTest {
-    private Cache<User> cache;
+    private Cache<Long, User> cache;
     private TestService testService;
     private User expectedUser;
-    
+
     @BeforeEach
     void setUp() {
         cache = new CacheImpl<>();
@@ -31,8 +31,16 @@ class CacheImplTest {
 
     @Test
     void put_get() {
-        cache.put(expectedUser);
-        User actualUser = cache.get(expectedUser);
-        Assertions.assertEquals(expectedUser, actualUser);
+        cache.put(1L, expectedUser);
+        User actualUser = cache.get(1L);
+        testService.assertEquals(expectedUser, actualUser);
+    }
+
+    @Test
+    void put_remove_get_getAll_error() {
+        cache.put(1L, expectedUser);
+        cache.remove(1L);
+        Assertions.assertNull(cache.get(1L));
+        Assertions.assertEquals(0, cache.getAll().size());
     }
 }

@@ -49,7 +49,7 @@ class UserServiceTest {
                         new PhoneDataSet("test")
                 )
         );
-        userService = new UserService( sessionFactory, new CacheImpl<User>());
+        userService = new UserService( sessionFactory, new CacheImpl<Long,User>());
     }
 
     @Test
@@ -62,16 +62,7 @@ class UserServiceTest {
     void load() throws SQLException, IllegalAccessException {
         userService.create(expectedUser);
         User actualUser = userService.load(expectedUser.getId());
-        assertEquals(expectedUser, actualUser);
-    }
-
-    private void assertEquals(User expectedUser, User actualUser) {
-        Assertions.assertEquals(expectedUser.getId(), actualUser.getId());
-        Assertions.assertEquals(expectedUser.getPhoneDataSet(), actualUser.getPhoneDataSet());
-        Assertions.assertEquals(expectedUser.getAddressDataSet().getId(), actualUser.getAddressDataSet().getId());
-        Assertions.assertEquals(expectedUser.getAddressDataSet().getStreet(), actualUser.getAddressDataSet().getStreet());
-        Assertions.assertEquals(expectedUser.getAge(), actualUser.getAge());
-        Assertions.assertEquals(expectedUser.getName(), actualUser.getName());
+        testService.assertEquals(expectedUser, actualUser);
     }
 
     @Test
@@ -89,6 +80,6 @@ class UserServiceTest {
         expectedUser.setId(id);
         userService.update(expectedUser);
         User actualUser = userService.load(expectedUser.getId());
-        assertEquals(expectedUser, actualUser);
+        testService.assertEquals(expectedUser, actualUser);
     }
 }

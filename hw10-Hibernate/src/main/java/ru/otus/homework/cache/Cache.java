@@ -2,13 +2,13 @@ package ru.otus.homework.cache;
 
 import java.util.Set;
 
-public interface Cache<T> {
+public interface Cache<K,V> {
 
-    void put(T value);
+    void put(K key,V value);
 
-    T get(T key);
+    V get(K key);
 
-    void remove(T key);
+    void remove(K key);
 
-    Set<T> getAll();
+    Set<V> getAll();
 }

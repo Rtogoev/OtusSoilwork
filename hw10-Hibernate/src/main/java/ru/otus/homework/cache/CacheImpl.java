@@ -2,24 +2,25 @@ package ru.otus.homework.cache;
 
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class CacheImpl<T> implements Cache<T> {
-    private final Map<T, SoftReference<T>> referenceSet;
+public class CacheImpl<K, V> implements Cache<K, V> {
+    private final Map<K, SoftReference<V>> referenceSet;
 
     public CacheImpl() {
         referenceSet = new HashMap<>();
     }
 
     @Override
-    public void put(T value) {
-        referenceSet.put(value, new SoftReference<>(value));
+    public void put(K key, V value) {
+        referenceSet.put(key, new SoftReference<>(value));
     }
 
     @Override
-    public T get(T key) {
-        SoftReference<T> t = referenceSet.get(key);
+    public V get(K key) {
+        SoftReference<V> t = referenceSet.get(key);
         if (t == null) {
             return null;
         }
@@ -27,12 +28,16 @@ public class CacheImpl<T> implements Cache<T> {
     }
 
     @Override
-    public void remove(T key) {
+    public void remove(K key) {
         referenceSet.remove(key);
     }
 
     @Override
-    public Set<T> getAll() {
-        return referenceSet.keySet();
+    public Set<V> getAll() {
+        Set<V> set = new HashSet<>();
+        for (SoftReference<V> reference : referenceSet.values()) {
+            set.add(reference.get());
+        }
+        return set;
     }
 }

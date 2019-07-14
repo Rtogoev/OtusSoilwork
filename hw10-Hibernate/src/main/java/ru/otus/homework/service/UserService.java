@@ -9,7 +9,7 @@ import ru.otus.homework.services.database.DbService;
 
 public class UserService implements DbService<User, Long> {
     private SessionFactory sessionFactory;
-    private Cache<User> cache;
+    private Cache<Long, User> cache;
 
     public UserService(SessionFactory sessionFactory, Cache cache) {
         this.sessionFactory = sessionFactory;
@@ -18,25 +18,18 @@ public class UserService implements DbService<User, Long> {
 
     @Override
     public long create(User user) {
-        cache.put(user);
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.save(user);
             session.getTransaction().commit();
         }
+        cache.put(user.getId(),user);
         return user.getId();
     }
 
     @Override
     public User load(Long id) {
-        User userFromCahce = null;
-        for (User userEntry : cache.getAll()) {
-            if (userEntry.getId().equals(id)) {
-                userFromCahce = userEntry;
-                break;
-            }
-        }
-        User loadedUser = cache.get(userFromCahce);
+        User loadedUser = cache.get(id);
         if (loadedUser != null) {
             return loadedUser;
         }
@@ -48,13 +41,7 @@ public class UserService implements DbService<User, Long> {
 
     @Override
     public void update(User user) {
-        for (User userEntry : cache.getAll()) {
-            if (userEntry.getId().equals(user.getId())) {
-                cache.remove(userEntry);
-                cache.put(user);
-                break;
-            }
-        }
+        cache.remove(user.getId());
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(user);
