@@ -35,13 +35,14 @@ public class UserService implements DbService<User, Long> {
         }
         try (Session session = sessionFactory.openSession()) {
             loadedUser = session.get(User.class, id);
+            cache.put(id,loadedUser);
             return loadedUser;
         }
     }
 
     @Override
     public void update(User user) {
-        cache.remove(user.getId());
+        cache.put(user.getId(),user);
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(user);
