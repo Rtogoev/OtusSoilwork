@@ -26,6 +26,13 @@
        cd /hw01-maven/target
        java -cp hw01-maven-1.0-SNAPSHOT-jar-with-dependencies.jar com.HelloOtus
        
+
+### Сборка
+1) Открыть терминал в корне проекта и выполнить команду:
+
+       mvn clean compile assembly:single package
+
+
 ## Задание 2: DIYarrayList
 
 Написать свою реализацию ArrayList на основе массива.
@@ -194,10 +201,12 @@ void createOrUpdate(T objectData); // опционально.
 Напишите свой cache engine с soft references.  
 Добавьте кэширование в DBService из задания про Hibernate ORM  
 
-# Сборка
-1) Открыть терминал в корне проекта и выполнить команду:
-
-       mvn clean compile assembly:single package
+## Задание 12: Веб сервер
+Встроить веб сервер в приложение из ДЗ про Hibernate ORM.  
+Сделать админскую страницу, на которой админ должен авторизоваться.  
+На странице должны быть доступны следующие функции:
+- создать пользователя
+- получить список пользователей
 
 # Об авторе
 
