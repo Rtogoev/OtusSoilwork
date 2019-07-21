@@ -3,6 +3,7 @@ package ru.otus.homework.services.database;
 import ru.otus.homework.models.Account;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class AccountService implements DbService<Account, Long> {
     private DbTemplate jdbcTemplate;
@@ -24,5 +25,10 @@ public class AccountService implements DbService<Account, Long> {
     @Override
     public void update(Account account) throws SQLException, IllegalAccessException {
         jdbcTemplate.update(account);
+    }
+
+    @Override
+    public List<Account> getAll() {
+        return null;
     }
 }

@@ -18,7 +18,7 @@ public class SimpleFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
 
         System.out.println("Request uri:" + request.getRequestURI());
-        System.out.println("Request user" + request.getUserPrincipal());
+        System.out.println("Request user:" + request.getUserPrincipal());
 
         filterChain.doFilter(servletRequest, servletResponse);
     }

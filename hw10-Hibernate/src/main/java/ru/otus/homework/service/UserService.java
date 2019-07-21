@@ -7,6 +7,8 @@ import ru.otus.homework.cache.Cache;
 import ru.otus.homework.model.User;
 import ru.otus.homework.services.database.DbService;
 
+import java.util.List;
+
 public class UserService implements DbService<User, Long> {
     private SessionFactory sessionFactory;
     private Cache<Long, User> cache;
@@ -47,6 +49,13 @@ public class UserService implements DbService<User, Long> {
             session.beginTransaction();
             session.update(user);
             session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public List<User> getAll() {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("SELECT a FROM User a", User.class).getResultList();
         }
     }
 }

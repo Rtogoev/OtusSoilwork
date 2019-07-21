@@ -6,12 +6,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class PublicInfo extends HttpServlet {
+public class AdminPanel extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        String resultAsString = "<p>PublicInfo Page</p>";
+        String userName = request.getUserPrincipal().getName();
+        String resultAsString = "<p> Security info page: " + userName + " </p>";
 
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);

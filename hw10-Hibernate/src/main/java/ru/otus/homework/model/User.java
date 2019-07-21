@@ -4,10 +4,11 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "User")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -88,5 +89,22 @@ public class User {
 
     public void setPhoneDataSet(Set<PhoneDataSet> phoneDataSet) {
         this.phoneDataSet = phoneDataSet;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return age == user.age &&
+                Objects.equals(id, user.id) &&
+                Objects.equals(name, user.name) &&
+                Objects.equals(addressDataSet, user.addressDataSet) &&
+                Objects.equals(phoneDataSet, user.phoneDataSet);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, age, addressDataSet, phoneDataSet);
     }
 }

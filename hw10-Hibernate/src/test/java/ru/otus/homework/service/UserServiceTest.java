@@ -17,6 +17,8 @@ import ru.otus.homework.services.database.DbService;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 class UserServiceTest {
 
@@ -41,15 +43,19 @@ class UserServiceTest {
 
         SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
         testService = new TestService(this);
-        expectedUser = new User(
-                "test",
+        expectedUser = generateUser();
+        userService = new UserService(sessionFactory, new CacheImpl<Long, User>());
+    }
+
+    private User generateUser() {
+        return new User(
+                testService.generateString(),
                 testService.generateNumeric(),
-                new AddressDataSet("test"),
+                new AddressDataSet(testService.generateString()),
                 Collections.singleton(
-                        new PhoneDataSet("test")
+                        new PhoneDataSet(testService.generateString())
                 )
         );
-        userService = new UserService( sessionFactory, new CacheImpl<Long,User>());
     }
 
     @Test
@@ -81,5 +87,22 @@ class UserServiceTest {
         userService.update(expectedUser);
         User actualUser = userService.load(expectedUser.getId());
         testService.assertEquals(expectedUser, actualUser);
+    }
+
+    @Test
+    void getAll() throws SQLException, IllegalAccessException {
+        Map<Long, User> expectedUsers = new HashMap<>();
+        for (int i = 0; i < 4; i++) {
+            User user = generateUser();
+            expectedUsers.put(
+                    userService.create(user),
+                    user
+            );
+        }
+        Map<Long, User> actualUsers = new HashMap<>();
+        for (User user : userService.getAll()) {
+            actualUsers.put(user.getId(), user);
+        }
+        Assertions.assertEquals(expectedUsers,actualUsers);
     }
 }
