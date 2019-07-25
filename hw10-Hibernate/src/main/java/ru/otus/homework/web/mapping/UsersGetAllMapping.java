@@ -1,4 +1,4 @@
-package ru.otus.homework;
+package ru.otus.homework.web.mapping;
 
 import com.google.gson.Gson;
 import ru.otus.homework.service.UserService;

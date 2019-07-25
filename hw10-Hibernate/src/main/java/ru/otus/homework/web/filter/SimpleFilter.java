@@ -1,4 +1,4 @@
-package ru.otus.homework;
+package ru.otus.homework.web.filter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
