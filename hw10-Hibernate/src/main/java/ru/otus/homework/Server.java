@@ -23,10 +23,7 @@ import ru.otus.homework.model.PhoneDataSet;
 import ru.otus.homework.model.User;
 import ru.otus.homework.service.UserService;
 import ru.otus.homework.web.filter.SimpleFilter;
-import ru.otus.homework.web.mapping.RootLink;
-import ru.otus.homework.web.mapping.UsersAddMapping;
-import ru.otus.homework.web.mapping.UsersAddRandomMapping;
-import ru.otus.homework.web.mapping.UsersGetAllMapping;
+import ru.otus.homework.web.mapping.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,8 +71,9 @@ public class Server {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.addServlet(new ServletHolder(new UsersGetAllMapping(userService)), "/users/get/all");
         context.addServlet(new ServletHolder(new UsersAddMapping(userService)), "/users/add");
+        context.addServlet(new ServletHolder(new CreateUserMenu(userService)), "/users/create");
         context.addServlet(new ServletHolder(new UsersAddRandomMapping(userService)), "/users/add/random");
-        context.addServlet(new ServletHolder(new RootLink()), "/*");
+        context.addServlet(new ServletHolder(new AdminPanel(userService)), "/*");
 
         context.addFilter(new FilterHolder(new SimpleFilter()), "/*", null);
 
