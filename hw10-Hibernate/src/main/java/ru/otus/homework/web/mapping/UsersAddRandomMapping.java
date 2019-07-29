@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
@@ -25,21 +24,18 @@ public class UsersAddRandomMapping extends HttpServlet {
 
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
-        PrintWriter printWriter = response.getWriter();
-        printWriter.print(
-                userService.create(
-                        new User(
-                                "name" + LocalDateTime.now().toString(),
-                                (int) (Math.random() * 10000),
-                                new AddressDataSet("street" + LocalDateTime.now().toString()),
-                                Collections.singleton(
-                                        new PhoneDataSet(
-                                                "number" + LocalDateTime.now().toString()
-                                        )
+        userService.create(
+                new User(
+                        "name" + LocalDateTime.now().toString(),
+                        (int) (Math.random() * 10000),
+                        new AddressDataSet("street" + LocalDateTime.now().toString()),
+                        Collections.singleton(
+                                new PhoneDataSet(
+                                        "number" + LocalDateTime.now().toString()
                                 )
                         )
                 )
         );
-        printWriter.flush();
+        new AdminPanel(userService).doGet(request, response);
     }
 }
