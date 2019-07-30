@@ -31,13 +31,10 @@ import java.net.URL;
 import java.util.Collections;
 
 public class Server {
-    private static final int PORT = 8080;
+    public static int PORT = 8080;
+    public static String address = "127.0.0.1";
     private UserService userService;
     private org.eclipse.jetty.server.Server server;
-
-    public static void main(String[] args) throws Exception {
-        new Server().start();
-    }
 
     public void start() throws Exception {
         userService = new UserService(createSessionFactory(), new CacheImpl<Long, User>());
@@ -71,7 +68,7 @@ public class Server {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.addServlet(new ServletHolder(new UsersGetAllMapping(userService)), "/users/get/all");
         context.addServlet(new ServletHolder(new UsersAddMapping(userService)), "/users/add");
-        context.addServlet(new ServletHolder(new CreateUserMenu(userService)), "/users/create");
+        context.addServlet(new ServletHolder(new CreateUserMenu()), "/users/create");
         context.addServlet(new ServletHolder(new UsersAddRandomMapping(userService)), "/users/add/random");
         context.addServlet(new ServletHolder(new AdminPanel(userService)), "/*");
 

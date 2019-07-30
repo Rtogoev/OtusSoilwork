@@ -75,6 +75,10 @@ public class User {
         this.age = age;
     }
 
+    public String getAddress() {
+        return addressDataSet.getStreet();
+    }
+
     public AddressDataSet getAddressDataSet() {
         return addressDataSet;
     }
@@ -89,6 +93,15 @@ public class User {
 
     public void setPhoneDataSet(Set<PhoneDataSet> phoneDataSet) {
         this.phoneDataSet = phoneDataSet;
+    }
+
+    public String getPhone() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (PhoneDataSet phone : phoneDataSet) {
+            stringBuilder.append(phone.getNumber())
+                    .append(" ");
+        }
+        return stringBuilder.toString();
     }
 
     @Override
