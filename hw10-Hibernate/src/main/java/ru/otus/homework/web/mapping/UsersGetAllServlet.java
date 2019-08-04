@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class UsersGetAllMapping extends HttpServlet {
+public class UsersGetAllServlet extends HttpServlet {
     private final UserService userService;
     private final Gson gson;
 
-    public UsersGetAllMapping(UserService userService) {
+    public UsersGetAllServlet(UserService userService) {
         this.userService = userService;
         gson = new Gson();
     }

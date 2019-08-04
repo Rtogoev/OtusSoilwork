@@ -25,7 +25,7 @@
 </table>
 <br>
 <br>
-<input value="Create user" type="button" onclick="location.href='http://${address}:8080/users/create'"/>
-<input value="Update list" type="button" onclick="location.href='http://${address}:8080/'"/>
+<input value="Create user" type="button" onclick="location.href='http://${address}:${port}/users/create'"/>
+<input value="Update list" type="button" onclick="location.href='http://${address}:${port}/'"/>
 </body>
 </html>

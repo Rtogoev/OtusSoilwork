@@ -1,32 +1,41 @@
 package ru.otus.homework.web.mapping;
 
-import ru.otus.homework.Server;
+import freemarker.template.TemplateException;
+import ru.otus.homework.service.TemplateService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreateUserMenu extends HttpServlet {
+    private TemplateService templateService;
+    private String address;
+    private int port;
+
+    public CreateUserMenu(String templatesPath, String address, int port) throws IOException {
+        this.templateService = new TemplateService(templatesPath);
+        this.address = address;
+        this.port = port;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String resultAsString = " <html>\n" +
-                "<head></head>" +
-                "<body>" +
-                "<form method=\"POST\" " +
-                "action=\"http://"+ Server.address +":" + Server.PORT +"/users/add\">" +
-                "Name: <input type=\"text\" name=\"name\"><br>" +
-                "Age: <input type=\"text\" name=\"age\"><br>" +
-                "Street: <input type=\"text\" name=\"street\"><br>" +
-                "Number: <input type=\"text\" name=\"number\"><br>" +
-                "\n<input value=\"Create\" type=\"submit\" /></form>\n" +
-                "<input value=\"Show all\" type=\"button\" onclick=\"location.href='http://"+ Server.address +":" + Server.PORT +"/'\" />" +
-                "</body>" +
-                "</html>";
+        Map<String, Object> root = new HashMap<>();
+        root.put("address", address);
+        root.put("port", port);
+        response.setContentType("text/html");
+        response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter printWriter = response.getWriter();
-        printWriter.print(resultAsString);
+        try {
+            templateService.process("CreateUser.ftl", root, response.getWriter());
+        } catch (TemplateException e) {
+            e.printStackTrace();
+        }
         printWriter.flush();
+
     }
 }

@@ -1,16 +1,12 @@
 package ru.otus.homework.web.mapping;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
-import ru.otus.homework.Server;
+import ru.otus.homework.service.TemplateService;
 import ru.otus.homework.service.UserService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -19,31 +15,34 @@ import java.util.Map;
 public class AdminPanel extends HttpServlet {
 
     private UserService userService;
-    private Configuration cfg;
+    private String address;
+    private int port;
+    private TemplateService templateService;
 
-    public AdminPanel(UserService userService) throws IOException {
+    public AdminPanel(
+            UserService userService,
+            String templatesPath,
+            String address,
+            int port
+    ) throws IOException {
         this.userService = userService;
-        cfg = new Configuration(Configuration.VERSION_2_3_27);
-        cfg.setDirectoryForTemplateLoading(new File("hw10-Hibernate/src/main/resources/templates"));
-        cfg.setDefaultEncoding("UTF-8");
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        cfg.setLogTemplateExceptions(false);
-        cfg.setWrapUncheckedExceptions(true);
+        this.templateService = new TemplateService(templatesPath);
+        this.address = address;
+        this.port = port;
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         Map<String, Object> root = new HashMap<>();
-        root.put("address", Server.address);
+        root.put("address", address);
+        root.put("port", port);
         root.put("users", userService.getAll());
-
-        Template temp = cfg.getTemplate("AdminPanel.ftl");
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter printWriter = response.getWriter();
         try {
-            temp.process(root, response.getWriter());
+            templateService.process("AdminPanel.ftl", root, response.getWriter());
         } catch (TemplateException e) {
             e.printStackTrace();
         }

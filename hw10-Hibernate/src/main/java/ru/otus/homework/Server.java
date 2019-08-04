@@ -31,14 +31,23 @@ import java.net.URL;
 import java.util.Collections;
 
 public class Server {
-    public static int PORT = 8080;
-    public static String address = "127.0.0.1";
+    public int port;
+    public String address;
     private UserService userService;
     private org.eclipse.jetty.server.Server server;
+    private File realmFile;
+    private String templatesPath;
+
+    public Server(int port, String address, String realmFilePath, String templatesPath) throws IOException {
+        this.port = port;
+        this.address = address;
+        this.realmFile = new File(realmFilePath);
+        this.templatesPath = templatesPath;
+    }
 
     public void start() throws Exception {
         userService = new UserService(createSessionFactory(), new CacheImpl<Long, User>());
-        this.server = createServer(PORT);
+        this.server = createServer(port, realmFile);
         server.start();
         server.join();
     }
@@ -64,26 +73,25 @@ public class Server {
         return metadata.getSessionFactoryBuilder().build();
     }
 
-    public org.eclipse.jetty.server.Server createServer(int port) throws IOException {
+    public org.eclipse.jetty.server.Server createServer(int port, File realmFile) throws IOException {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.addServlet(new ServletHolder(new UsersGetAllMapping(userService)), "/users/get/all");
-        context.addServlet(new ServletHolder(new UsersAddMapping(userService)), "/users/add");
-        context.addServlet(new ServletHolder(new CreateUserMenu()), "/users/create");
-        context.addServlet(new ServletHolder(new UsersAddRandomMapping(userService)), "/users/add/random");
-        context.addServlet(new ServletHolder(new AdminPanel(userService)), "/*");
-
+        context.addServlet(new ServletHolder(new UsersGetAllServlet(userService)), "/users/get/all");
+        context.addServlet(new ServletHolder(new UsersAddMapping(userService, templatesPath, address, port)), "/users/add");
+        context.addServlet(new ServletHolder(new CreateUserMenu(templatesPath, address, port)), "/users/create");
+        context.addServlet(new ServletHolder(new UsersAddRandomMapping(userService, templatesPath, address, port)), "/users/add/random");
+        context.addServlet(new ServletHolder(new AdminPanel(userService, templatesPath, address, port)), "/*");
         context.addFilter(new FilterHolder(new SimpleFilter()), "/*", null);
 
         org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(port);
         server.setHandler(new HandlerList(context));
 
         HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{createSecurityHandler(context)});
+        handlers.setHandlers(new Handler[]{createSecurityHandler(context, realmFile)});
         server.setHandler(handlers);
         return server;
     }
 
-    private SecurityHandler createSecurityHandler(ServletContextHandler context) throws IOException {
+    private SecurityHandler createSecurityHandler(ServletContextHandler context, File realmFile) throws IOException {
         Constraint constraint = new Constraint();
         constraint.setName("auth");
         constraint.setAuthenticate(true);
@@ -97,7 +105,6 @@ public class Server {
         //как декодировать стороку с юзером:паролем https://www.base64decode.org/
         security.setAuthenticator(new BasicAuthenticator());
         URL propFile = null;
-        File realmFile = new File("hw10-Hibernate/src/main/resources/realm.properties");
         if (realmFile.exists()) {
             propFile = realmFile.toURI().toURL();
         }

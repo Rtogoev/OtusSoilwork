@@ -27,7 +27,6 @@ class MyATMTest {
     private static int amountRub5000 = 42;
     private MyATM myATM;
     private Map<Bill, Integer> expectedBillsCashIn;
-    //    private Map<Bill> expectedBillsCashOut;
     private int expectedSum;
 
     @BeforeEach
