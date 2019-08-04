@@ -14,9 +14,9 @@ import java.util.Map;
 public class CreateUserMenu extends HttpServlet {
     private TemplateService templateService;
     private String address;
-    private int port;
+    private String port;
 
-    public CreateUserMenu(String templatesPath, String address, int port) throws IOException {
+    public CreateUserMenu(String templatesPath, String address, String port) throws IOException {
         this.templateService = new TemplateService(templatesPath);
         this.address = address;
         this.port = port;

@@ -31,14 +31,14 @@ import java.net.URL;
 import java.util.Collections;
 
 public class Server {
-    public int port;
+    public String port;
     public String address;
     private UserService userService;
     private org.eclipse.jetty.server.Server server;
     private File realmFile;
     private String templatesPath;
 
-    public Server(int port, String address, String realmFilePath, String templatesPath) throws IOException {
+    public Server(String port, String address, String realmFilePath, String templatesPath) throws IOException {
         this.port = port;
         this.address = address;
         this.realmFile = new File(realmFilePath);
@@ -73,7 +73,7 @@ public class Server {
         return metadata.getSessionFactoryBuilder().build();
     }
 
-    public org.eclipse.jetty.server.Server createServer(int port, File realmFile) throws IOException {
+    public org.eclipse.jetty.server.Server createServer(String port, File realmFile) throws IOException {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.addServlet(new ServletHolder(new UsersGetAllServlet(userService)), "/users/get/all");
         context.addServlet(new ServletHolder(new UsersAddMapping(userService, templatesPath, address, port)), "/users/add");
@@ -82,7 +82,7 @@ public class Server {
         context.addServlet(new ServletHolder(new AdminPanel(userService, templatesPath, address, port)), "/*");
         context.addFilter(new FilterHolder(new SimpleFilter()), "/*", null);
 
-        org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(port);
+        org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(Integer.parseInt(port));
         server.setHandler(new HandlerList(context));
 
         HandlerList handlers = new HandlerList();

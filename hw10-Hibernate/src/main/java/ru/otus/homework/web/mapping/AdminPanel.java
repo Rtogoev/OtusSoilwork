@@ -16,14 +16,14 @@ public class AdminPanel extends HttpServlet {
 
     private UserService userService;
     private String address;
-    private int port;
+    private String port;
     private TemplateService templateService;
 
     public AdminPanel(
             UserService userService,
             String templatesPath,
             String address,
-            int port
+            String port
     ) throws IOException {
         this.userService = userService;
         this.templateService = new TemplateService(templatesPath);

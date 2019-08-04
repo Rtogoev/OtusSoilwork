@@ -15,10 +15,10 @@ import java.util.Collections;
 public class UsersAddRandomMapping extends HttpServlet {
     private final String templatesPath;
     private final String address;
-    private final int port;
+    private final String port;
     private UserService userService;
 
-    public UsersAddRandomMapping(UserService userService, String templatesPath, String address, int port) {
+    public UsersAddRandomMapping(UserService userService, String templatesPath, String address, String port) {
         this.userService = userService;
         this.templatesPath = templatesPath;
         this.address = address;
