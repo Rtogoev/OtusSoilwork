@@ -6,36 +6,36 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
-import ru.otus.homework.model.User;
-import ru.otus.homework.service.UserService;
+import ru.otus.homework.model.UserForm;
+import ru.otus.homework.service.UserFormService;
 
 import java.util.List;
 
 @Controller
 public class UserController {
 
-    private final UserService userService;
+    private final UserFormService userFormService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserFormService userFormService) {
+        this.userFormService = userFormService;
     }
 
     @GetMapping({"/", "/user/list"})
     public String userList(Model model) {
-        List<User> users = userService.getAll();
-        model.addAttribute("users", users);
+        List<UserForm> userForms = userFormService.getAll();
+        model.addAttribute("users", userForms);
         return "userList.html";
     }
 
     @GetMapping("/user/create")
     public String userCreate(Model model) {
-        model.addAttribute("user", new User());
+        model.addAttribute("user", new UserForm());
         return "userCreate.html";
     }
 
     @PostMapping("/user/save")
-    public RedirectView userSave(@ModelAttribute User user) {
-        userService.create(user);
+    public RedirectView userSave(@ModelAttribute UserForm userForm) {
+        userFormService.saveAsUser(userForm);
         return new RedirectView("/user/list", true);
     }
 

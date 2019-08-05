@@ -19,10 +19,6 @@ public class User {
 
     @Column(name = "age")
     private int age;
-    @Column(insertable = false, updatable = false)
-    private String address;
-    @Column(insertable = false, updatable = false)
-    private String phone;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "address")
@@ -40,33 +36,11 @@ public class User {
         this.age = age;
         this.addressDataSet = addressDataSet;
         this.phoneDataSet = phoneDataSet;
-        this.address = addressDataSet.getStreet();
         setPhone(phoneDataSet);
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     private void setPhone(Set<PhoneDataSet> phoneDataSet) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (PhoneDataSet phone : phoneDataSet) {
-            stringBuilder.append(phone.getNumber())
-                    .append(" ");
-        }
-        this.phone = stringBuilder.toString();
+       this.phoneDataSet = phoneDataSet;
     }
 
     @Override
@@ -110,7 +84,6 @@ public class User {
 
     public void setAddressDataSet(AddressDataSet addressDataSet) {
         this.addressDataSet = addressDataSet;
-        this.address = addressDataSet.getStreet();
     }
 
     public Set<PhoneDataSet> getPhoneDataSet() {
