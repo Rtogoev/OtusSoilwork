@@ -6,7 +6,6 @@ import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.cache.Cache;
 import ru.otus.homework.model.User;
-import ru.otus.homework.services.database.DbService;
 
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class UserService implements DbService<User, Long> {
             session.save(user);
             session.getTransaction().commit();
         }
-        cache.put(user.getId(),user);
+        cache.put(user.getId(), user);
         return user.getId();
     }
 
@@ -39,14 +38,14 @@ public class UserService implements DbService<User, Long> {
         }
         try (Session session = sessionFactory.openSession()) {
             loadedUser = session.get(User.class, id);
-            cache.put(id,loadedUser);
+            cache.put(id, loadedUser);
             return loadedUser;
         }
     }
 
     @Override
     public void update(User user) {
-        cache.put(user.getId(),user);
+        cache.put(user.getId(), user);
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(user);

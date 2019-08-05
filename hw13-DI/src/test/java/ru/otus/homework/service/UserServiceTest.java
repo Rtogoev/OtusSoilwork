@@ -13,7 +13,6 @@ import ru.otus.homework.cache.CacheImpl;
 import ru.otus.homework.model.AddressDataSet;
 import ru.otus.homework.model.PhoneDataSet;
 import ru.otus.homework.model.User;
-import ru.otus.homework.services.database.DbService;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -103,6 +102,6 @@ class UserServiceTest {
         for (User user : userService.getAll()) {
             actualUsers.put(user.getId(), user);
         }
-        Assertions.assertEquals(expectedUsers,actualUsers);
+        Assertions.assertEquals(expectedUsers, actualUsers);
     }
 }
