@@ -76,9 +76,9 @@ public class Server {
     public org.eclipse.jetty.server.Server createServer(String port, File realmFile) throws IOException {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.addServlet(new ServletHolder(new UsersGetAllServlet(userService)), "/users/get/all");
-        context.addServlet(new ServletHolder(new UsersAddMapping(userService, templatesPath, address, port)), "/users/add");
+        context.addServlet(new ServletHolder(new UsersAddMapping(userService, address, port)), "/users/add");
         context.addServlet(new ServletHolder(new CreateUserMenu(templatesPath, address, port)), "/users/create");
-        context.addServlet(new ServletHolder(new UsersAddRandomMapping(userService, templatesPath, address, port)), "/users/add/random");
+        context.addServlet(new ServletHolder(new UsersAddRandomMapping(userService, address, port)), "/users/add/random");
         context.addServlet(new ServletHolder(new AdminPanel(userService, templatesPath, address, port)), "/*");
         context.addFilter(new FilterHolder(new SimpleFilter()), "/*", null);
 
