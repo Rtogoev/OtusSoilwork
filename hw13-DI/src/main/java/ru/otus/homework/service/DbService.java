@@ -1,4 +1,4 @@
-package ru.otus.homework.services.database;
+package ru.otus.homework.service;
 
 import java.sql.SQLException;
 import java.util.List;
