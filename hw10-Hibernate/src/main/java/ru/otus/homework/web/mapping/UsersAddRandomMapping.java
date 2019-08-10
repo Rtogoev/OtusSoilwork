@@ -13,16 +13,12 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 public class UsersAddRandomMapping extends HttpServlet {
-    private final String templatesPath;
-    private final String address;
-    private final String port;
+    private final String URL_STRING;
     private UserService userService;
 
-    public UsersAddRandomMapping(UserService userService, String templatesPath, String address, String port) {
+    public UsersAddRandomMapping(UserService userService, String address, String port) {
         this.userService = userService;
-        this.templatesPath = templatesPath;
-        this.address = address;
-        this.port = port;
+        URL_STRING = "http://" + address + ":" + port + "/";
     }
 
     @Override
@@ -42,6 +38,8 @@ public class UsersAddRandomMapping extends HttpServlet {
                         )
                 )
         );
-        new AdminPanel(userService, templatesPath, address, port).doGet(request, response);
+        response.setStatus(HttpServletResponse.SC_FOUND);
+        response.setHeader("Location", URL_STRING);
+        response.sendRedirect(URL_STRING);
     }
 }

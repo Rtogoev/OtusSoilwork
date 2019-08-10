@@ -12,16 +12,12 @@ import java.io.IOException;
 import java.util.Collections;
 
 public class UsersAddMapping extends HttpServlet {
-    private final String templatesPath;
-    private final String address;
-    private final String port;
+    private final String URL_STRING;
     private UserService userService;
 
-    public UsersAddMapping(UserService userService, String templatesPath, String address, String port) {
+    public UsersAddMapping(UserService userService, String address, String port) {
         this.userService = userService;
-        this.templatesPath = templatesPath;
-        this.address = address;
-        this.port = port;
+        URL_STRING = "http://" + address + ":" + port + "/";
     }
 
     @Override
@@ -32,7 +28,9 @@ public class UsersAddMapping extends HttpServlet {
         userService.create(
                 createUserFromRequest(request)
         );
-        new AdminPanel(userService, templatesPath, address, port).doGet(request, response);
+        response.setStatus(HttpServletResponse.SC_FOUND);
+        response.setHeader("Location", URL_STRING);
+        response.sendRedirect(URL_STRING);
     }
 
     private User createUserFromRequest(HttpServletRequest request) {

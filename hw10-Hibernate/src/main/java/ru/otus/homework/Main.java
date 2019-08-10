@@ -5,8 +5,8 @@ public class Main {
         Server server = new Server(
                 "8080",
                 "127.0.0.1",
-                "hw10-Hibernate/src/main/resources/realm.properties",
-                "hw10-Hibernate/src/main/resources/templates"
+                Main.class.getClassLoader().getResource("realm.properties").getFile(),
+                Main.class.getClassLoader().getResource("templates").getFile()
         );
         server.start();
     }
