@@ -20,6 +20,7 @@
         <module>hw09-ORM</module>
         <module>hw10-Hibernate</module>
         <module>hw13-DI</module>
+        <module>hw14-JMM</module>
     </modules>
 
     <properties>
