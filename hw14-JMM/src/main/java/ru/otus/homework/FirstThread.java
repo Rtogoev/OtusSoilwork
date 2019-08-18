@@ -1,14 +1,24 @@
 package ru.otus.homework;
 
 public class FirstThread implements Runnable {
-    private static volatile boolean increase;
-    private static volatile boolean decrease;
+    private static volatile boolean workNotAllowed;
     private final Count count;
+    private boolean increase;
+    private boolean decrease;
 
     public FirstThread(Count count) {
+        workNotAllowed = true;
         increase = true;
         decrease = false;
         this.count = count;
+    }
+
+    public static boolean isWorkNotAllowed() {
+        return workNotAllowed;
+    }
+
+    public static void setWorkNotAllowed(boolean workNotAllowed) {
+        FirstThread.workNotAllowed = workNotAllowed;
     }
 
     private void incrementAndPrint() {
@@ -35,6 +45,7 @@ public class FirstThread implements Runnable {
 
                     synchronized (count) {
                         incrementAndPrint();
+                        workNotAllowed = false;
                         count.notify();
                     }
                 }
@@ -49,6 +60,7 @@ public class FirstThread implements Runnable {
 
                     synchronized (count) {
                         decreaseAndPrint();
+                        workNotAllowed = false;
                         count.notify();
                     }
                 }

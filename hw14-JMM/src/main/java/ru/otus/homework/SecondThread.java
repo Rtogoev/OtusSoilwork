@@ -14,8 +14,11 @@ public class SecondThread implements Runnable {
 
             while (Main.isWork()) {
                 synchronized (count) {
-                    count.wait();
+                    while (FirstThread.isWorkNotAllowed()) {
+                        count.wait();
+                    }
                     System.out.print(count.getValue() + "]");
+                    FirstThread.setWorkNotAllowed(true);
                 }
             }
         } catch (InterruptedException e) {
