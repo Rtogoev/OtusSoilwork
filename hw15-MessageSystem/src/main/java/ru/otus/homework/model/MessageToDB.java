@@ -1,6 +1,6 @@
 package ru.otus.homework.model;
 
-public class MessageToDB {
+public class MessageToDB implements MyMessage {
 
     private User user;
 
