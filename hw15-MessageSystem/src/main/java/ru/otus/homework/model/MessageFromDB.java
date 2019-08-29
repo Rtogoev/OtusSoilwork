@@ -1,17 +1,19 @@
 package ru.otus.homework.model;
 
-public class MessageFromDB implements MyMessage {
-    private UserForm userForm;
+public class MessageFromDB implements MyMessage<UserForm> {
+    private UserForm value;
 
-    public MessageFromDB(UserForm userForm) {
-        this.userForm = userForm;
+    public MessageFromDB(UserForm value) {
+        this.value = value;
     }
 
-    public UserForm getUserForm() {
-        return userForm;
+    @Override
+    public void setValue(UserForm value) {
+        this.value = value;
     }
 
-    public void setUserForm(UserForm userForm) {
-        this.userForm = userForm;
+    @Override
+    public UserForm getValue() {
+        return value;
     }
 }

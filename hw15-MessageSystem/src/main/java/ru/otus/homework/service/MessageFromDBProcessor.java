@@ -2,7 +2,10 @@ package ru.otus.homework.service;
 
 import org.springframework.stereotype.Service;
 import ru.otus.homework.model.MessageFromDB;
+import ru.otus.homework.model.MyMessage;
 import ru.otus.homework.model.UserForm;
+
+import java.util.concurrent.LinkedBlockingDeque;
 
 @Service
 public class MessageFromDBProcessor {
@@ -12,11 +15,12 @@ public class MessageFromDBProcessor {
         this.messageService = messageService;
     }
 
-    public UserForm startProcessing() throws InterruptedException {
+    public void startProcessing(long messageFromDBQueueId, LinkedBlockingDeque<UserForm> beforeSendBuffer) {
         while (true) {
-            MessageFromDB messageFromDB = messageService.getMessageFromDB();
-            if (messageFromDB != null) {
-                return messageFromDB.getUserForm();
+            MyMessage message = messageService.getMessageFromQueue(messageFromDBQueueId);
+            if (message != null) {
+                MessageFromDB messageFromDB = (MessageFromDB) message;
+                beforeSendBuffer.add(messageFromDB.getValue());
             }
         }
     }

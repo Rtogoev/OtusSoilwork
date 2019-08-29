@@ -15,13 +15,14 @@ public class MessageToDBProcessor {
         this.userService = userService;
     }
 
-    public void startProcessing() {
+    public void startProcessing(long messageToDBQueueId, long messageFromDBQueueId) {
         new Thread(
                 () -> {
                     while (true) {
-                        MessageToDB messageToDB = messageService.getMessageToDB();
-                        if (messageToDB != null) {
-                            User user = messageToDB.getUser();
+                        MyMessage message = messageService.getMessageFromQueue(messageToDBQueueId);
+                        if (message != null) {
+                            MessageToDB messageToDB = (MessageToDB) message;
+                            User user = messageToDB.getValue();
                             try {
                                 userService.create(user);
                             } catch (SQLException | IllegalAccessException e) {
@@ -31,7 +32,8 @@ public class MessageToDBProcessor {
                             for (PhoneDataSet phoneDataSet : user.getPhoneDataSet()) {
                                 phone.append(phoneDataSet.getNumber());
                             }
-                            messageService.addMessageFromDB(
+                            messageService.addMessageToQueue(
+                                    messageFromDBQueueId,
                                     new MessageFromDB(
                                             new UserForm(
                                                     user.getId().toString(),

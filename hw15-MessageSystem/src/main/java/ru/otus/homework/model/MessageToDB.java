@@ -1,18 +1,20 @@
 package ru.otus.homework.model;
 
-public class MessageToDB implements MyMessage {
+public class MessageToDB implements MyMessage<User> {
 
-    private User user;
+    private User value;
 
     public MessageToDB(User user) {
-        this.user = user;
+        this.value = user;
     }
 
-    public User getUser() {
-        return user;
+    @Override
+    public void setValue(User value) {
+        this.value = value;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    @Override
+    public User getValue() {
+        return value;
     }
 }
