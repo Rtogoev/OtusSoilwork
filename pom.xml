@@ -21,7 +21,8 @@
 <!--        <module>hw10-Hibernate</module>-->
 <!--        <module>hw13-DI</module>-->
 <!--        <module>hw14-JMM</module>-->
-        <module>hw15-MessageSystem</module>
+<!--        <module>hw15-MessageSystem</module>-->
+        <module>hw16-MessageServer</module>
     </modules>
 
     <properties>
