@@ -16,12 +16,17 @@ public class MessageFromDBProcessor {
     }
 
     public void startProcessing(long messageFromDBQueueId, LinkedBlockingDeque<UserForm> beforeSendBuffer) {
-        while (true) {
-            MyMessage message = messageService.getMessageFromQueue(messageFromDBQueueId);
-            if (message != null) {
-                MessageFromDB messageFromDB = (MessageFromDB) message;
-                beforeSendBuffer.add(messageFromDB.getValue());
-            }
-        }
+        new Thread(
+                () -> {
+
+                    while (true) {
+                        MyMessage message = messageService.getMessageFromQueue(messageFromDBQueueId);
+                        if (message != null) {
+                            MessageFromDB messageFromDB = (MessageFromDB) message;
+                            beforeSendBuffer.add(messageFromDB.getValue());
+                        }
+                    }
+                }
+        ).start();
     }
 }

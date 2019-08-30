@@ -7,9 +7,9 @@ import java.util.Set;
 
 @Service
 public class IdGenerator {
-    private Set<Long> generatedIdSet = new HashSet<>();
+    private static Set<Long> generatedIdSet = new HashSet<>();
 
-    public long generate() {
+    public static long generate() {
         while (true) {
             long id = generateLong();
             if (generatedIdSet.add(id)) {
@@ -18,7 +18,7 @@ public class IdGenerator {
         }
     }
 
-    private long generateLong() {
+    private static long generateLong() {
         return (long) (Math.random() * 10000000);
     }
 }

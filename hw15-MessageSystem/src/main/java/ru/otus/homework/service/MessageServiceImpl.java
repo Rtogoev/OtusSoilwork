@@ -14,17 +14,18 @@ public class MessageServiceImpl implements MessageService {
     Map<Long, LinkedBlockingQueue<MyMessage>> queuesMap = new HashMap<>();
 
     @Override
-    public synchronized void addMessageToQueue(long queueOwnerId, MyMessage message) {
+    public void addMessageToQueue(long queueOwnerId, MyMessage message) {
         if (queuesMap.get(queueOwnerId) == null) {
             LinkedBlockingQueue<MyMessage> queue = new LinkedBlockingQueue<>();
             queue.add(message);
             queuesMap.put(queueOwnerId, queue);
+            return;
         }
         queuesMap.get(queueOwnerId).add(message);
     }
 
     @Override
-    public synchronized MyMessage getMessageFromQueue(long queueOwnerId) {
+    public MyMessage getMessageFromQueue(long queueOwnerId) {
         LinkedBlockingQueue<MyMessage> queue = queuesMap.get(queueOwnerId);
         if (queue == null) {
             return null;

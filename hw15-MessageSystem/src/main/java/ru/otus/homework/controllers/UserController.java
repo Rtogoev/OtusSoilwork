@@ -1,4 +1,4 @@
-package ru.otus.homework.contacts;
+package ru.otus.homework.controllers;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -15,40 +15,34 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 @Controller
 public class UserController {
+    private static Long messageToDBQueueId;
+    private static Long messageFromDBQueueId;
     private final LinkedBlockingDeque<UserForm> beforeSendBuffer = new LinkedBlockingDeque<>();
-    private final IdGenerator idGenerator;
     private final MessageService messageService;
     private final MessageToDBProcessor messageToDBProcessor;
     private final MessageFromDBProcessor messageFromDBProcessor;
     private final SimpMessagingTemplate template;
-    private long messageToDBQueueId;
-    private long messageFromDBQueueId;
 
     public UserController(
-            IdGenerator idGenerator, MessageService messageService,
+            MessageService messageService,
             MessageToDBProcessor messageToDBProcessor,
             MessageFromDBProcessor messageFromDBProcessor,
             SimpMessagingTemplate template
     ) {
-        this.idGenerator = idGenerator;
         this.messageService = messageService;
         this.messageToDBProcessor = messageToDBProcessor;
         this.messageFromDBProcessor = messageFromDBProcessor;
         this.template = template;
     }
 
-    public long getMessageFromDBQueueId() {
-        return messageFromDBQueueId;
-    }
-
-    public long getMessageToDBQueueId() {
-        return messageToDBQueueId;
-    }
-
     @PostConstruct
     void init() {
-        messageToDBQueueId = idGenerator.generate();
-        messageFromDBQueueId = idGenerator.generate();
+        if (messageFromDBQueueId == null) {
+            messageFromDBQueueId = IdGenerator.generate();
+        }
+        if (messageToDBQueueId == null) {
+            messageToDBQueueId = IdGenerator.generate();
+        }
         messageToDBProcessor.startProcessing(messageToDBQueueId, messageFromDBQueueId);
         messageFromDBProcessor.startProcessing(messageFromDBQueueId, beforeSendBuffer);
         new Thread(
