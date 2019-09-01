@@ -9,11 +9,11 @@
         <artifactId>Soilwork</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <modules>
-        <module>Backend</module>
-        <module>Frontend</module>
-        <module>MessageServer</module>
-    </modules>
+
+
+    <artifactId>MessageServer</artifactId>
+    <name>MessageServer</name>
+
     <properties>
         <spring.version>5.1.5.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -108,8 +108,6 @@
             <version>4.3.1</version>
         </dependency>
     </dependencies>
-
-    <artifactId>hw16-MessageServer</artifactId>
     <version>1.0-SNAPSHOT</version>
 
 
