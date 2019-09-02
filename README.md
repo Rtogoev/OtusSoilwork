@@ -264,9 +264,9 @@ Cервер из предыдущего ДЗ про MessageSystem раздели
        
 
 ### Сборка
-1) Зайти в в папки Backend, Frontend, MessageServer. Открыть терминал и выполнить команду:
+1) Зайти в в папку hw16-MessageServer. Открыть терминал и выполнить команду:
 
-       mvn package
+       mvn clean package
 
 
 # Об авторе

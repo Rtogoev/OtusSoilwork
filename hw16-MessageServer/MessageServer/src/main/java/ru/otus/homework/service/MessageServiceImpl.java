@@ -28,6 +28,37 @@ public class MessageServiceImpl implements MessageService {
         queuesMap.get(queueOwnerAddress).add(message);
     }
 
+//    private void go() {
+//        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+//            while (!Thread.currentThread().isInterrupted()) {
+//                logger.info("waiting for client connection");
+//                try (Socket clientSocket = serverSocket.accept()) {
+//                    clientHandler(clientSocket);
+//                }
+//            }
+//        } catch (Exception ex) {
+//            logger.error("error", ex);
+//        }
+//    }
+//
+//    private void clientHandler(Socket clientSocket) {
+//        try (PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+//             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+//        ) {
+//            String input = null;
+//            while (!"stop".equals(input)) {
+//                input = in.readLine();
+//                if (input != null) {
+//                    logger.info("from client: {} ", input);
+//                    out.println("echo:" + input);
+//                }
+//            }
+//        } catch (Exception ex) {
+//            logger.error("error", ex);
+//        }
+//    }
+//
+
     @PostConstruct
     void init() {
         new Thread(

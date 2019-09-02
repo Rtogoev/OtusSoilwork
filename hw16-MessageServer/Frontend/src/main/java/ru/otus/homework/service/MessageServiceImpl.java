@@ -17,8 +17,8 @@ public class MessageServiceImpl implements MessageService {
     private Map<Long, MessageProcessor> processorMap = new HashMap<>();
     private long dbAddress;
     private long frontAddress;
-    @Value("server.port")
-    int localPort;
+    @Value("${server.port}")
+    private String serverPort;
 
     @Override
     public void addMessageToQueue(long queueOwnerAddress, MyMessage message) {
@@ -30,10 +30,27 @@ public class MessageServiceImpl implements MessageService {
         }
         queuesMap.get(queueOwnerAddress).add(message);
     }
-
+//    private void go(String request) {
+//        try {
+//            try (Socket clientSocket = new Socket(HOST, PORT)) {
+//                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+//                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+//
+//                logger.info("sending to server");
+//                out.println(request);
+//                String resp = in.readLine();
+//                logger.info("server response: {}", resp);
+//                sleep();
+//                logger.info("stop communication");
+//                out.println("stop");
+//            }
+//
+//        } catch (Exception ex) {
+//            logger.error("error", ex);
+//        }
+//    }
     @PostConstruct
     void init() {
-        System.out.println(" ********    = + = + = + = + = + =  СМОТРИ СЮДА СУКА, МОЙ ПОРТ: " + localPort);
         new Thread(
                 () -> {
                     while (true) {
