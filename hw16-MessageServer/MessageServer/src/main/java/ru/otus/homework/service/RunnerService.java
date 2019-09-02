@@ -10,17 +10,18 @@ import java.io.InputStreamReader;
 public class RunnerService {
 
     private void runInstance(String command) throws IOException, InterruptedException {
-        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-        processBuilder.redirectErrorStream(true);
-        Process process = processBuilder.start();
         new Thread(
                 () -> {
                     try {
+                        Thread.sleep(1000);
+                        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+                        processBuilder.redirectErrorStream(true);
+                        Process process = processBuilder.start();
                         while (process.isAlive()) {
                             Thread.sleep(1000);
                             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                             String line = reader.readLine();
-                            while ((line != null) || process.isAlive() || line.length() == 0 || line.equals("")) {
+                            while ((line != null)) {
                                 System.out.println(line);
 
                                 line = reader.readLine();

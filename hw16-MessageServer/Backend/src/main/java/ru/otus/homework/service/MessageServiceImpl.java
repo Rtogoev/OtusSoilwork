@@ -1,6 +1,7 @@
 package ru.otus.homework.service;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.model.MyMessage;
 
@@ -16,6 +17,8 @@ public class MessageServiceImpl implements MessageService {
     private Map<Long, MessageProcessor> processorMap = new HashMap<>();
     private long dbAddress;
     private long frontAddress;
+    @Value("server.port")
+    int localPort;
 
     @Override
     public void addMessageToQueue(long queueOwnerAddress, MyMessage message) {
@@ -30,6 +33,7 @@ public class MessageServiceImpl implements MessageService {
 
     @PostConstruct
     void init() {
+        System.out.println(" ********    = + = + = + = + = + =  СМОТРИ СЮДА СУКА, МОЙ ПОРТ: " + localPort);
         new Thread(
                 () -> {
                     while (true) {

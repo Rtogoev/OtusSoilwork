@@ -8,7 +8,7 @@ import java.io.IOException;
 
 @Service
 public class FrontendRunnerService {
-    private static final String FRONTEND_RUN_COMMAND = "java -jar hw16-MessageServer/Backend/target/Frontend-1.0-SNAPSHOT.jar ";
+    private static final String FRONTEND_RUN_COMMAND = "java -jar hw16-MessageServer/Frontend/target/Frontend-1.0-SNAPSHOT.jar ";
     private final RunnerService runnerService;
     @Value("${frontendInstanseCount}")
     private int frontendInstanseCount;
