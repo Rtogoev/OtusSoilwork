@@ -11,7 +11,7 @@ public class BackendRunnerService {
 
     private static final String BACKEND_RUN_COMMAND = "java -jar hw16-MessageServer/Backend/target/Backend-1.0-SNAPSHOT.jar";
     private final RunnerService runnerService;
-    @Value("${backendInstanseCount}")
+    @Value("${backend.instanse.count}")
     private int backendInstanseCount;
 
     public BackendRunnerService(RunnerService runnerService) {

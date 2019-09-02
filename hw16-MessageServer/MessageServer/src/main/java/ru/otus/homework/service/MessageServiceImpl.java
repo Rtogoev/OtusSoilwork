@@ -23,7 +23,7 @@ public class MessageServiceImpl implements MessageService {
     private long dbAddress;
     private long frontAddress;
 
-    @Value("message.system.port")
+    @Value("${message.system.port}")
     private String messageSystemPort;
 
     @Override
@@ -38,15 +38,19 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private void go() {
-        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(messageSystemPort))) {
-            while (!Thread.currentThread().isInterrupted()) {
-                try (Socket clientSocket = serverSocket.accept()) {
-                    clientHandler(clientSocket);
+        new Thread(
+                () -> {
+                    try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(messageSystemPort))) {
+                        while (!Thread.currentThread().isInterrupted()) {
+                            try (Socket clientSocket = serverSocket.accept()) {
+                                clientHandler(clientSocket);
+                            }
+                        }
+                    } catch (Exception ex) {
+                        System.out.println(ex);
+                    }
                 }
-            }
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
+        ).start();
     }
 
     private void clientHandler(Socket clientSocket) {
@@ -82,7 +86,7 @@ public class MessageServiceImpl implements MessageService {
                     }
                 }
         ).start();
-//        go();
+        go();
     }
 
     @Override

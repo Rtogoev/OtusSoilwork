@@ -10,7 +10,7 @@ import java.io.IOException;
 public class FrontendRunnerService {
     private static final String FRONTEND_RUN_COMMAND = "java -jar hw16-MessageServer/Frontend/target/Frontend-1.0-SNAPSHOT.jar ";
     private final RunnerService runnerService;
-    @Value("${frontendInstanseCount}")
+    @Value("${frontend.instanse.count}")
     private int frontendInstanseCount;
 
     public FrontendRunnerService(RunnerService runnerService) {
