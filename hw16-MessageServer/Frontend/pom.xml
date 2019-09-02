@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>Otus</groupId>
-        <artifactId>Soilwork</artifactId>
+        <artifactId>hw16-MessageServer</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <properties>
@@ -106,33 +106,21 @@
 
     <artifactId>Frontend</artifactId>
     <version>1.0-SNAPSHOT</version>
-
-
+    <name>Frontend</name>
     <build>
-        <finalName>${name}</finalName>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.1.7.RELEASE</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
-                            <goal>war</goal>
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <webResources>
-                        <resource>
-                            <directory>src/main/resources</directory>
-                        </resource>
-                    </webResources>
-                </configuration>
             </plugin>
         </plugins>
     </build>
-    <packaging>war</packaging>
-    <name>Frontend</name>
 </project>
