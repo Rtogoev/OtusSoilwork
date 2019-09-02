@@ -6,14 +6,9 @@
 
     <parent>
         <groupId>Otus</groupId>
-        <artifactId>Soilwork</artifactId>
+        <artifactId>hw16-MessageServer</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-
-
-    <artifactId>MessageServer</artifactId>
-    <name>MessageServer</name>
-
     <properties>
         <spring.version>5.1.5.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -108,33 +103,24 @@
             <version>4.3.1</version>
         </dependency>
     </dependencies>
+
+    <artifactId>MessageServer</artifactId>
     <version>1.0-SNAPSHOT</version>
-
-
+    <name>MessageServer</name>
     <build>
-        <finalName>${name}</finalName>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.1.7.RELEASE</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
-                            <goal>war</goal>
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <webResources>
-                        <resource>
-                            <directory>src/main/resources</directory>
-                        </resource>
-                    </webResources>
-                </configuration>
             </plugin>
         </plugins>
     </build>
-    <packaging>war</packaging>
 </project>

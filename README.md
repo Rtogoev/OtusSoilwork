@@ -264,7 +264,7 @@ Cервер из предыдущего ДЗ про MessageSystem раздели
        
 
 ### Сборка
-1) Зайти в в папки Backend, Frontend, MessageService. Открыть терминал и выполнить команду:
+1) Зайти в в папки Backend, Frontend, MessageServer. Открыть терминал и выполнить команду:
 
        mvn package
 
