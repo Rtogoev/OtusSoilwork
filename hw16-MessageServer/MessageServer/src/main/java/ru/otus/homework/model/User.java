@@ -1,31 +1,15 @@
 package ru.otus.homework.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
-import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity
-@Table(name = "User")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "age")
     private int age;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "address")
     private AddressDataSet addressDataSet;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "phone_number")
     private Set<PhoneDataSet> phoneDataSet;
 
     public User() {

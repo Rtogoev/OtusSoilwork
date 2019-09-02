@@ -1,17 +1,9 @@
 package ru.otus.homework.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Objects;
 
-@Entity(name = "phones")
 public class PhoneDataSet {
-    @Id
-    @GeneratedValue
     private Long id;
-    @Column(name = "number")
     private String number;
 
     public PhoneDataSet() {

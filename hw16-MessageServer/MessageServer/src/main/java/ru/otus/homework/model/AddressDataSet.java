@@ -1,17 +1,10 @@
 package ru.otus.homework.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+
 import java.util.Objects;
 
-@Entity(name = "address")
 public class AddressDataSet {
-    @Id
-    @GeneratedValue
     private Long id;
-    @Column(name = "street")
     private String street;
 
     public AddressDataSet() {

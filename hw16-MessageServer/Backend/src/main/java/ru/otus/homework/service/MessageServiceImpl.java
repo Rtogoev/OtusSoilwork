@@ -17,8 +17,8 @@ public class MessageServiceImpl implements MessageService {
     private Map<Long, MessageProcessor> processorMap = new HashMap<>();
     private long dbAddress;
     private long frontAddress;
-    @Value("${server.port}")
-    private String serverPort;
+    @Value("${port}")
+    private String port;
 
     @Override
     public void addMessageToQueue(long queueOwnerAddress, MyMessage message) {
@@ -30,7 +30,8 @@ public class MessageServiceImpl implements MessageService {
         }
         queuesMap.get(queueOwnerAddress).add(message);
     }
-//    private void go(String request) {
+
+    //    private void go(String request) {
 //        try {
 //            try (Socket clientSocket = new Socket(HOST, PORT)) {
 //                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
