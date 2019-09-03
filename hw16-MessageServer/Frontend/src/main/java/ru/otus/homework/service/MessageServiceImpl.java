@@ -5,13 +5,18 @@ import org.springframework.stereotype.Service;
 import ru.otus.homework.model.MyMessage;
 
 import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class MessageServiceImpl implements MessageService {
@@ -34,15 +39,68 @@ public class MessageServiceImpl implements MessageService {
 
     private void go(String request) {
         try {
-            try (Socket clientSocket = new Socket("localhost", 8081)) {
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                out.println(request);
-                String resp = in.readLine();
-                System.out.println(resp);
+            try(SocketChannel socketChannel = SocketChannel.open()) {
+                socketChannel.configureBlocking(false);
+
+;
+                socketChannel.connect(new InetSocketAddress("localhost", 8081));
+                while (!socketChannel.finishConnect()) {
+                    System.out.println("connection established");
+                }
+                send(socketChannel, request);
+                sleep();
+                send(socketChannel, "stop\n");
             }
         } catch (Exception ex) {
             System.out.println(ex);
+        }
+    }
+
+    private void send(SocketChannel socketChannel, String request) throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(1000);
+        buffer.put(request.getBytes());
+        buffer.flip();
+        socketChannel.write(buffer);
+
+        Selector selector = Selector.open();
+        socketChannel.register(selector, SelectionKey.OP_READ);
+        while (true) {
+            if (selector.select() > 0) { //This method performs a blocking
+                if (processServerResponse(selector)) {
+                    return;
+                }
+            }
+        }
+    }
+
+    private boolean processServerResponse(Selector selector) throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(1000);
+        Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
+        while (selectedKeys.hasNext()) {
+            SelectionKey key = selectedKeys.next();
+            if (key.isReadable()) {
+                SocketChannel socketChannel = (SocketChannel) key.channel();
+                int count = socketChannel.read(buffer);
+                if (count > 0) {
+                    buffer.flip();
+                    String response = Charset.forName("UTF-8").decode(buffer).toString();
+                    System.out.println("front received: " + response);
+                    buffer.clear();
+                    buffer.flip();
+                    return true;
+                }
+            }
+            selectedKeys.remove();
+        }
+        return false;
+    }
+
+
+    private static void sleep() {
+        try {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(10));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
