@@ -4,16 +4,16 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import ru.otus.homework.model.*;
-import ru.otus.homework.service.IdGenerator;
 import ru.otus.homework.service.MessageProcessor;
 import ru.otus.homework.service.MessageService;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
+import java.util.UUID;
 
 @Controller
 public class UserController implements MessageProcessor {
-    private static Long address;
+    private static UUID address;
     private final MessageService messageService;
     private final SimpMessagingTemplate template;
 
@@ -23,13 +23,13 @@ public class UserController implements MessageProcessor {
     ) {
         this.messageService = messageService;
         this.template = template;
-        address = IdGenerator.generate();
+        address = UUID.randomUUID();
     }
 
     @PostConstruct
     void init() {
         messageService.addMessageProcessor(address, this);
-        messageService.setFrontAddress(address);
+        messageService.addFrontAddress(address);
     }
 
     @MessageMapping("/create")
@@ -57,11 +57,7 @@ public class UserController implements MessageProcessor {
 
     @Override
     public void process(MyMessage message) {
-        new Thread(
-                () -> {
-                    MessageFromDB messageFromDB = (MessageFromDB) message;
-                    this.template.convertAndSend("/topic/response", messageFromDB.getValue());
-                }
-        ).start();
+        MessageFromDB messageFromDB = (MessageFromDB) message;
+        this.template.convertAndSend("/topic/response", messageFromDB.getValue());
     }
 }
