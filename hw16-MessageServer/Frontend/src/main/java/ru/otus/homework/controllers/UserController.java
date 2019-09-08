@@ -8,7 +8,6 @@ import ru.otus.homework.service.IdGenerator;
 import ru.otus.homework.service.MessageProcessor;
 import ru.otus.homework.service.MessageService;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 
 @Controller
@@ -24,12 +23,6 @@ public class UserController implements MessageProcessor {
         this.messageService = messageService;
         this.template = template;
         address = IdGenerator.generate();
-    }
-
-    @PostConstruct
-    void init() {
-        messageService.addMessageProcessor(address, this);
-        messageService.setFrontAddress(address);
     }
 
     @MessageMapping("/create")
