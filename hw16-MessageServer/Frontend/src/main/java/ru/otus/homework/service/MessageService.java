@@ -7,7 +7,7 @@ import java.util.concurrent.TimeoutException;
 
 
 public interface MessageService {
-    void addMessageToQueue(int dbAddress, MyMessage message);
+    void addMessageToQueue(String dbAddress, MyMessage message);
 
-    int getDbAddress() throws IOException, TimeoutException;
+    String getDbAddress() throws IOException, TimeoutException;
 }

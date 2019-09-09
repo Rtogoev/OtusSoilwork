@@ -38,7 +38,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void addMessageToQueue(int dbAddress, MyMessage message) {
+    public void addMessageToQueue(String dbAddress, MyMessage message) {
         try {
             send(socketChannel, gson.toJson(message));
         } catch (IOException | TimeoutException e) {
@@ -47,8 +47,8 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public int getDbAddress() throws IOException, TimeoutException {
-        return Integer.parseInt(send(socketChannel, "back=?"));
+    public String getDbAddress() throws IOException, TimeoutException {
+        return send(socketChannel, "back=?");
     }
 
     private String send(SocketChannel socketChannel, String request) throws IOException, TimeoutException {

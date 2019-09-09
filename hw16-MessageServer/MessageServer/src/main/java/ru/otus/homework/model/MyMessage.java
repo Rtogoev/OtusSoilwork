@@ -1,7 +1,27 @@
 package ru.otus.homework.model;
 
-public interface MyMessage<U> {
-    U getValue();
+public class MyMessage {
+    private String destinationPort;
+    private String value;
 
-    void setValue(U value);
+    public MyMessage(String destinationPort, String value) {
+        this.destinationPort = destinationPort;
+        this.value = value;
+    }
+
+    public String getDestinationPort() {
+        return destinationPort;
+    }
+
+    public void setDestinationPort(String destinationPort) {
+        this.destinationPort = destinationPort;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

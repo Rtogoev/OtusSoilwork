@@ -1,6 +1,7 @@
 package ru.otus.homework.service;
 
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.model.MyMessage;
@@ -14,10 +15,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
@@ -25,8 +24,9 @@ public class MessageServiceImpl implements MessageService {
 
     private Map<Long, LinkedBlockingQueue<MyMessage>> queuesMap = new HashMap<>();
     private Map<Long, MessageProcessor> processorMap = new HashMap<>();
-    private long dbAddress;
-    private long frontAddress;
+    private List<String> dbAddressList = new ArrayList<>();
+    private List<String> frontAddressList = new ArrayList<>();
+    private Gson gson = new Gson();
 
     @Value("${message.system.port}")
     private String messageSystemPort;
@@ -43,7 +43,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private void go() throws IOException {
-        try(ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
+        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
             serverSocketChannel.configureBlocking(false);
 
             ServerSocket serverSocket = serverSocketChannel.socket();
@@ -85,7 +85,6 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private void readWriteClient(SelectionKey selectionKey) throws IOException {
-        System.out.println("readWriteClient");
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
 
         ByteBuffer buffer = ByteBuffer.allocate(5);
@@ -93,7 +92,7 @@ public class MessageServiceImpl implements MessageService {
 
         while (socketChannel.read(buffer) > 0) {
             buffer.flip();
-            String input = Charset.forName("UTF-8").decode(buffer).toString();
+            String input = StandardCharsets.UTF_8.decode(buffer).toString();
 
             buffer.flip();
             buffer.clear();
@@ -103,28 +102,49 @@ public class MessageServiceImpl implements MessageService {
         String requestFromClient = inputBuffer.toString();
 
         System.out.println("Server received: " + requestFromClient);
-        byte[] response = processClientRequest(requestFromClient).getBytes();
-        for (byte b : response) {
-            buffer.put(b);
-            if (buffer.position() == buffer.limit()) {
-                buffer.flip();
-                socketChannel.write(buffer);
-                buffer.flip();
-                buffer.clear();
-            }
+        String request = processClientRequest(requestFromClient);
+        if (request != null) {
+            System.out.println(request);
+            return;
         }
-        if (buffer.hasRemaining()) {
-            buffer.flip();
-            socketChannel.write(buffer);
-        }
-
-        if ("stop\n".equals(requestFromClient)) {
-            socketChannel.close();
-        }
+        System.out.println(gson.fromJson(requestFromClient, MyMessage.class));
+//        for (byte b : response) {
+//            buffer.put(b);
+//            if (buffer.position() == buffer.limit()) {
+//                buffer.flip();
+//                socketChannel.write(buffer);
+//                buffer.flip();
+//                buffer.clear();
+//            }
+//        }
+//        if (buffer.hasRemaining()) {
+//            buffer.flip();
+//            socketChannel.write(buffer);
+//        }
     }
 
     private String processClientRequest(String input) {
-        return "echo:" + input;
+        String[] split = input.split("=");
+        if (split.length == 2) {
+            if (split[1].equals("?")) {
+                if (split[0].equals("front")) {
+                    return getFrontAddress();
+                }
+                if (split[0].equals("back")) {
+                    return getDbAddress();
+                }
+            }
+
+            if (split[0].equals("front")) {
+                frontAddressList.add(split[1]);
+                return "ok";
+            }
+            if (split[0].equals("back")) {
+                dbAddressList.add(split[1]);
+                return "ok";
+            }
+        }
+        return null;
     }
 
     @PostConstruct
@@ -153,22 +173,20 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public long getDbAddress() {
-        return dbAddress;
+    public String getDbAddress() {
+        return dbAddressList.get(getRandomIndex(dbAddressList.size()));
+    }
+
+
+    private int getRandomIndex(int size) {
+        if (size < 2) {
+            return 0;
+        }
+        return (int) (Math.random() * size - 1);
     }
 
     @Override
-    public void setDbAddress(long dbAddress) {
-        this.dbAddress = dbAddress;
-    }
-
-    @Override
-    public long getFrontAddress() {
-        return frontAddress;
-    }
-
-    @Override
-    public void setFrontAddress(long frontAddress) {
-        this.frontAddress = frontAddress;
+    public String getFrontAddress() {
+        return frontAddressList.get(getRandomIndex(frontAddressList.size()));
     }
 }

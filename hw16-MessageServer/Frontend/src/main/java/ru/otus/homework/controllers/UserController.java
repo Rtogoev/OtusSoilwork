@@ -8,7 +8,9 @@ import ru.otus.homework.service.IdGenerator;
 import ru.otus.homework.service.MessageProcessor;
 import ru.otus.homework.service.MessageService;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.TimeoutException;
 
 @Controller
 public class UserController implements MessageProcessor {
@@ -26,7 +28,7 @@ public class UserController implements MessageProcessor {
     }
 
     @MessageMapping("/create")
-    public void createUser(UserForm userForm) {
+    public void createUser(UserForm userForm) throws IOException, TimeoutException {
         messageService.addMessageToQueue(
                 messageService.getDbAddress(),
                 new MessageToDB(
