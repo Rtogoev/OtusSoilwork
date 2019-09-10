@@ -4,7 +4,6 @@ package ru.otus.homework.service;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.model.MyMessage;
 
-import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -25,36 +24,23 @@ public class MessageServiceImpl implements MessageService {
             LinkedBlockingQueue<MyMessage> queue = new LinkedBlockingQueue<>();
             queue.add(message);
             queuesMap.put(queueOwnerAddress, queue);
+            new Thread(
+                    () -> {
+                        try {
+                            System.out.println("Создан поток");
+                            MyMessage myMessage = queue.take();
+                            while (true) {
+                                processorMap.get(queueOwnerAddress).process(myMessage);
+                                myMessage = queue.take();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+            ).start();
             return;
         }
         queuesMap.get(queueOwnerAddress).add(message);
-    }
-
-    @PostConstruct
-    void init() {
-        new Thread(
-                () -> {
-                    while (true) {
-                        for (Map.Entry<UUID, LinkedBlockingQueue<MyMessage>> entry : queuesMap.entrySet()) {
-                            MessageProcessor processor = processorMap.get(entry.getKey());
-                            LinkedBlockingQueue<MyMessage> queue = entry.getValue();
-                            new Thread(
-                                    () -> {
-                                        try {
-                                            MyMessage myMessage = queue.poll();
-                                            while (myMessage != null) {
-                                                processor.process(myMessage);
-                                                myMessage = queue.poll();
-                                            }
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                            ).start();
-                        }
-                    }
-                }
-        ).start();
     }
 
     @Override
