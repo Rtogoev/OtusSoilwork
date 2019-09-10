@@ -1,5 +1,6 @@
 package ru.otus.homework.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.model.*;
 
@@ -13,6 +14,11 @@ public class MessageToDBProcessor implements MessageProcessor {
     private final MessageService messageService;
     private DbService<User, Long> userService;
 
+    @Value("${frontend.type}")
+    private long receiverType;
+    @Value("${backend.type}")
+    private long type;
+
     public MessageToDBProcessor(MessageService messageService, DbService<User, Long> userService) {
         this.messageService = messageService;
         this.userService = userService;
@@ -22,7 +28,7 @@ public class MessageToDBProcessor implements MessageProcessor {
     @PostConstruct
     void init() {
         messageService.addMessageProcessor(address, this);
-        messageService.addDbAddress(address);
+        messageService.addAddress(type, address);
     }
 
     @Override
@@ -39,7 +45,7 @@ public class MessageToDBProcessor implements MessageProcessor {
             phone.append(phoneDataSet.getNumber());
         }
         messageService.addMessageToQueue(
-                messageService.getFrontAddress(),
+                messageService.getAddress(receiverType),
                 new MessageFromDB(
                         new UserForm(
                                 user.getId().toString(),

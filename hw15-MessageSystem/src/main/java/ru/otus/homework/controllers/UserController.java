@@ -1,5 +1,6 @@
 package ru.otus.homework.controllers;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,10 @@ public class UserController implements MessageProcessor {
     private static UUID address;
     private final MessageService messageService;
     private final SimpMessagingTemplate template;
+    @Value("${backend.type}")
+    private long receiverType;
+    @Value("${frontend.type}")
+    private long type;
 
     public UserController(
             MessageService messageService,
@@ -29,13 +34,13 @@ public class UserController implements MessageProcessor {
     @PostConstruct
     void init() {
         messageService.addMessageProcessor(address, this);
-        messageService.addFrontAddress(address);
+        messageService.addAddress(type, address);
     }
 
     @MessageMapping("/create")
     public void createUser(UserForm userForm) {
         messageService.addMessageToQueue(
-                messageService.getDbAddress(),
+                messageService.getAddress(receiverType),
                 new MessageToDB(
                         new User(
                                 userForm.getName(),

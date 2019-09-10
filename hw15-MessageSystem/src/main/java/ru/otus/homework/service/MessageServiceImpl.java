@@ -17,8 +17,7 @@ public class MessageServiceImpl implements MessageService {
 
     private Map<UUID, LinkedBlockingQueue<MyMessage>> queuesMap = new ConcurrentHashMap<>();
     private Map<UUID, MessageProcessor> processorMap = new ConcurrentHashMap<>();
-    private Set<UUID> dbAddressSet = new HashSet<>();
-    private Set<UUID> frontAddressSet = new HashSet<>();
+    private Map<Long, Set<UUID>> addressMap = new ConcurrentHashMap<>();
 
     @Override
     public void addMessageToQueue(UUID queueOwnerAddress, MyMessage message) {
@@ -64,11 +63,25 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public UUID getDbAddress() {
-        return getRandomElement(dbAddressSet);
+    public UUID getAddress(long type) {
+        return getRandomElement(addressMap.get(type));
+    }
+
+    @Override
+    public void addAddress(long type, UUID address) {
+        if (!addressMap.containsKey(type)) {
+            Set<UUID> addressSet = new HashSet<>();
+            addressSet.add(address);
+            addressMap.put(type, addressSet);
+            return;
+        }
+        addressMap.get(type).add(address);
     }
 
     private UUID getRandomElement(Set<UUID> uuidSet) {
+        if (uuidSet == null) {
+            return null;
+        }
         if (uuidSet.size() == 0) {
             return null;
         }
@@ -76,15 +89,15 @@ public class MessageServiceImpl implements MessageService {
         int resultIndex = generateIndex(uuidSet.size());
 
         int currentIndex = 0;
-        UUID resultDbAddress = null;
-        for (UUID dbAddress : uuidSet) {
+        UUID resultAddress = null;
+        for (UUID address : uuidSet) {
             if (resultIndex == currentIndex) {
-                resultDbAddress = dbAddress;
+                resultAddress = address;
                 break;
             }
             currentIndex++;
         }
-        return resultDbAddress;
+        return resultAddress;
     }
 
     private int generateIndex(int size) {
@@ -94,22 +107,7 @@ public class MessageServiceImpl implements MessageService {
         if (size == 1) {
             return 0;
         }
-        int max = dbAddressSet.size() - 1;
+        int max = size - 1;
         return (int) (max * Math.random());
-    }
-
-    @Override
-    public void addDbAddress(UUID dbAddress) {
-        dbAddressSet.add(dbAddress);
-    }
-
-    @Override
-    public UUID getFrontAddress() {
-        return getRandomElement(frontAddressSet);
-    }
-
-    @Override
-    public void addFrontAddress(UUID frontAddress) {
-        frontAddressSet.add(frontAddress);
     }
 }
