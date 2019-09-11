@@ -28,10 +28,8 @@ public class MessageServiceImpl implements MessageService {
                     () -> {
                         try {
                             System.out.println("Создан поток");
-                            MyMessage myMessage = queue.take();
                             while (true) {
-                                processorMap.get(queueOwnerAddress).process(myMessage);
-                                myMessage = queue.take();
+                                processorMap.get(queueOwnerAddress).process(queue.take());
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
