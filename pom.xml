@@ -17,10 +17,11 @@
 <!--        <module>hw06-ATM</module>-->
 <!--        <module>hw07-Department_ATM</module>-->
 <!--        <module>hw08-JsonObjectWriter</module>-->
-        <module>hw09-ORM</module>
-        <module>hw10-Hibernate</module>
-        <module>hw13-DI</module>
-        <module>hw14-JMM</module>
+<!--        <module>hw09-ORM</module>-->
+<!--        <module>hw10-Hibernate</module>-->
+<!--        <module>hw13-DI</module>-->
+<!--        <module>hw14-JMM</module>-->
+        <module>hw15-MessageSystem</module>
     </modules>
 
     <properties>
