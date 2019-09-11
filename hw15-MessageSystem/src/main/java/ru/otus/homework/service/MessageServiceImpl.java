@@ -4,71 +4,94 @@ package ru.otus.homework.service;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.model.MyMessage;
 
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private Map<Long, LinkedBlockingQueue<MyMessage>> queuesMap = new HashMap<>();
-    private Map<Long, MessageProcessor> processorMap = new HashMap<>();
-    private long dbAddress;
-    private long frontAddress;
+    private Map<UUID, LinkedBlockingQueue<MyMessage>> queuesMap = new ConcurrentHashMap<>();
+    private Map<UUID, MessageProcessor> processorMap = new ConcurrentHashMap<>();
+    private Map<Long, Set<UUID>> addressMap = new ConcurrentHashMap<>();
 
     @Override
-    public void addMessageToQueue(long queueOwnerAddress, MyMessage message) {
-        if (queuesMap.get(queueOwnerAddress) == null) {
+    public void addMessageToQueue(UUID queueOwnerAddress, MyMessage message) {
+        if (!queuesMap.containsKey(queueOwnerAddress)) {
             LinkedBlockingQueue<MyMessage> queue = new LinkedBlockingQueue<>();
             queue.add(message);
             queuesMap.put(queueOwnerAddress, queue);
+            new Thread(
+                    () -> {
+                        try {
+                            System.out.println("Создан поток");
+                            while (true) {
+                                processorMap.get(queueOwnerAddress).process(queue.take());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+            ).start();
             return;
         }
         queuesMap.get(queueOwnerAddress).add(message);
     }
 
-    @PostConstruct
-    void init() {
-        new Thread(
-                () -> {
-                    while (true) {
-                        for (Map.Entry<Long, LinkedBlockingQueue<MyMessage>> entry : queuesMap.entrySet()) {
-                            MessageProcessor processor = processorMap.get(entry.getKey());
-                            LinkedBlockingQueue<MyMessage> queue = entry.getValue();
-                            MyMessage myMessage = queue.poll();
-                            while (myMessage != null) {
-                                processor.process(myMessage);
-                                myMessage = queue.poll();
-                            }
-                        }
-                    }
-                }
-        ).start();
-    }
-
     @Override
-    public void addMessageProcessor(long address, MessageProcessor processor) {
+    public void addMessageProcessor(UUID address, MessageProcessor processor) {
         processorMap.put(address, processor);
     }
 
     @Override
-    public long getDbAddress() {
-        return dbAddress;
+    public UUID getAddress(long type) {
+        return getRandomElement(addressMap.get(type));
     }
 
     @Override
-    public void setDbAddress(long dbAddress) {
-        this.dbAddress = dbAddress;
+    public void addAddress(long type, UUID address) {
+        if (!addressMap.containsKey(type)) {
+            Set<UUID> addressSet = new HashSet<>();
+            addressSet.add(address);
+            addressMap.put(type, addressSet);
+            return;
+        }
+        addressMap.get(type).add(address);
     }
 
-    @Override
-    public long getFrontAddress() {
-        return frontAddress;
+    private UUID getRandomElement(Set<UUID> uuidSet) {
+        if (uuidSet == null) {
+            return null;
+        }
+        if (uuidSet.size() == 0) {
+            return null;
+        }
+
+        int resultIndex = generateIndex(uuidSet.size());
+
+        int currentIndex = 0;
+        UUID resultAddress = null;
+        for (UUID address : uuidSet) {
+            if (resultIndex == currentIndex) {
+                resultAddress = address;
+                break;
+            }
+            currentIndex++;
+        }
+        return resultAddress;
     }
 
-    @Override
-    public void setFrontAddress(long frontAddress) {
-        this.frontAddress = frontAddress;
+    private int generateIndex(int size) {
+        if (size == 0) {
+            return -1;
+        }
+        if (size == 1) {
+            return 0;
+        }
+        int max = size - 1;
+        return (int) (max * Math.random());
     }
 }
