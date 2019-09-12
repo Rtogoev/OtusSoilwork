@@ -4,6 +4,7 @@ package ru.otus.homework.service;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.otus.homework.model.MessageFromDB;
 import ru.otus.homework.model.MyMessage;
 
 import javax.annotation.PostConstruct;
@@ -20,8 +21,14 @@ import java.util.concurrent.TimeoutException;
 @Service
 public class MessageServiceImpl implements MessageService {
 
+    private MessageProcessor processor;
     private Gson gson = new Gson();
     private SocketChannel socketChannel;
+
+    @Value("${source.port}")
+    private String sourcePort;
+    @Value("${source.type}")
+    private String sourceType;
     @Value("${server.port}")
     private int port;
     @Value("${response.break.count}")
@@ -38,17 +45,25 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void addMessageToQueue(String dbAddress, MyMessage message) {
+    public void addMessageToQueue(MyMessage message) {
         try {
-            send(socketChannel, gson.toJson(message));
+            processor.process(
+                    gson.fromJson(
+                            send(
+                                    socketChannel,
+                                    gson.toJson(message)
+                            ),
+                            MessageFromDB.class
+                    )
+            );
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public String getDbAddress() throws IOException, TimeoutException {
-        return send(socketChannel, "back=?");
+    public void setProcessor(MessageProcessor processor) {
+        this.processor = processor;
     }
 
     private String send(SocketChannel socketChannel, String request) throws IOException, TimeoutException {
@@ -60,11 +75,16 @@ public class MessageServiceImpl implements MessageService {
         Selector selector = Selector.open();
         socketChannel.register(selector, SelectionKey.OP_READ);
         for (int i = 0; i < responseBreakCount; i++) {
-            if (selector.select() > 0) { //This method performs a blocking
-                String response = processServerResponse(selector);
-                if (response != null) {
-                    return response;
+            try {
+                if (selector.select() > 0) { //This method performs a blocking
+                    String response = processServerResponse(selector);
+                    if (response != null) {
+                        return response;
+                    }
+                    sleep(responseBreakSeconds);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
                 sleep(responseBreakSeconds);
             }
         }
@@ -82,7 +102,6 @@ public class MessageServiceImpl implements MessageService {
                 if (count > 0) {
                     buffer.flip();
                     String response = StandardCharsets.UTF_8.decode(buffer).toString();
-                    System.out.println("front " + port + "  received: " + response);
                     buffer.clear();
                     buffer.flip();
                     return response;
@@ -99,15 +118,9 @@ public class MessageServiceImpl implements MessageService {
             socketChannel.configureBlocking(false);
             this.socketChannel = socketChannel;
             socketChannel.connect(new InetSocketAddress("localhost", 8081));
-            send(socketChannel, "front=" + port);
-            while (!socketChannel.finishConnect()) {
-                System.out.println("connection established");
+            if (send(socketChannel, sourceType + ":" + sourcePort).equals("200")) {
+                System.out.println("front: " + sourcePort + " in a band!");
             }
-//            new Thread(
-//                    () -> {
-//                        processServerResponse()
-//                    }
-//            )
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }

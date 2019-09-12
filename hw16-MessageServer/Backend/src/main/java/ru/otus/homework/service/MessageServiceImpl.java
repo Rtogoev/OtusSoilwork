@@ -1,7 +1,10 @@
 package ru.otus.homework.service;
 
 
+import com.google.gson.Gson;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.otus.homework.model.MessageToDB;
 import ru.otus.homework.model.MyMessage;
 
 import javax.annotation.PostConstruct;
@@ -11,53 +14,60 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+// todo создавать сокеты на которых будет происходить обмен сообщениями.
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private Map<Long, LinkedBlockingQueue<MyMessage>> queuesMap = new HashMap<>();
-    private Map<Long, MessageProcessor> processorMap = new HashMap<>();
-    private long dbAddress;
-    private long frontAddress;
+    private MessageProcessor processor;
+    private Gson gson = new Gson();
+    private SocketChannel socketChannel;
+
+    @Value("${source.port}")
+    private String sourcePort;
+    @Value("${source.type}")
+    private String sourceType;
+    @Value("${server.port}")
+    private int port;
+    @Value("${response.break.count}")
+    private int responseBreakCount;
+    @Value("${response.break.seconds}")
+    private long responseBreakSeconds;
+
+    private static void sleep(Long seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
     @Override
-    public void addMessageToQueue(long queueOwnerAddress, MyMessage message) {
-        if (queuesMap.get(queueOwnerAddress) == null) {
-            LinkedBlockingQueue<MyMessage> queue = new LinkedBlockingQueue<>();
-            queue.add(message);
-            queuesMap.put(queueOwnerAddress, queue);
-            return;
-        }
-        queuesMap.get(queueOwnerAddress).add(message);
-    }
-
-
-    private void go(String request) {
+    public void addMessageToQueue(MyMessage message) {
         try {
-            try(SocketChannel socketChannel = SocketChannel.open()) {
-                socketChannel.configureBlocking(false);
-
-                ;
-                socketChannel.connect(new InetSocketAddress("localhost", 8081));
-                while (!socketChannel.finishConnect()) {
-                    System.out.println("connection established");
-                }
-                send(socketChannel, request);
-                sleep();
-                send(socketChannel, "stop\n");
-            }
-        } catch (Exception ex) {
-            System.out.println(ex);
+            processor.process(
+                    gson.fromJson(
+                            send(
+                                    socketChannel,
+                                    gson.toJson(message)
+                            ),
+                            MessageToDB.class
+                    )
+            );
+        } catch (IOException | TimeoutException e) {
+            e.printStackTrace();
         }
     }
 
-    private void send(SocketChannel socketChannel, String request) throws IOException {
+    @Override
+    public void setProcessor(MessageProcessor processor) {
+        this.processor = processor;
+    }
+
+    private String send(SocketChannel socketChannel, String request) throws IOException, TimeoutException {
         ByteBuffer buffer = ByteBuffer.allocate(1000);
         buffer.put(request.getBytes());
         buffer.flip();
@@ -65,16 +75,24 @@ public class MessageServiceImpl implements MessageService {
 
         Selector selector = Selector.open();
         socketChannel.register(selector, SelectionKey.OP_READ);
-        while (true) {
-            if (selector.select() > 0) { //This method performs a blocking
-                if (processServerResponse(selector)) {
-                    return;
+        for (int i = 0; i < responseBreakCount; i++) {
+            try {
+                if (selector.select() > 0) { //This method performs a blocking
+                    String response = processServerResponse(selector);
+                    if (response != null) {
+                        return response;
+                    }
+                    sleep(responseBreakSeconds);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                sleep(responseBreakSeconds);
             }
         }
+        throw new TimeoutException();
     }
 
-    private boolean processServerResponse(Selector selector) throws IOException {
+    private String processServerResponse(Selector selector) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(1000);
         Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
         while (selectedKeys.hasNext()) {
@@ -84,69 +102,28 @@ public class MessageServiceImpl implements MessageService {
                 int count = socketChannel.read(buffer);
                 if (count > 0) {
                     buffer.flip();
-                    String response = Charset.forName("UTF-8").decode(buffer).toString();
-                    System.out.println("back received: " + response);
+                    String response = StandardCharsets.UTF_8.decode(buffer).toString();
                     buffer.clear();
                     buffer.flip();
-                    return true;
+                    return response;
                 }
             }
             selectedKeys.remove();
         }
-        return false;
-    }
-
-
-    private static void sleep() {
-        try {
-            Thread.sleep(TimeUnit.SECONDS.toMillis(10));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        return null;
     }
 
     @PostConstruct
     void init() {
-        new Thread(
-                () -> {
-                    while (true) {
-                        for (Map.Entry<Long, LinkedBlockingQueue<MyMessage>> entry : queuesMap.entrySet()) {
-                            MessageProcessor processor = processorMap.get(entry.getKey());
-                            LinkedBlockingQueue<MyMessage> queue = entry.getValue();
-                            MyMessage myMessage = queue.poll();
-                            while (myMessage != null) {
-                                processor.process(myMessage);
-                                myMessage = queue.poll();
-                            }
-                        }
-                    }
-                }
-        ).start();
-        go("Backend here");
-    }
-
-    @Override
-    public void addMessageProcessor(long address, MessageProcessor processor) {
-        processorMap.put(address, processor);
-    }
-
-    @Override
-    public long getDbAddress() {
-        return dbAddress;
-    }
-
-    @Override
-    public void setDbAddress(long dbAddress) {
-        this.dbAddress = dbAddress;
-    }
-
-    @Override
-    public long getFrontAddress() {
-        return frontAddress;
-    }
-
-    @Override
-    public void setFrontAddress(long frontAddress) {
-        this.frontAddress = frontAddress;
+        try (SocketChannel socketChannel = SocketChannel.open()) {
+            socketChannel.configureBlocking(false);
+            this.socketChannel = socketChannel;
+            socketChannel.connect(new InetSocketAddress("localhost", 8081));
+            if (send(socketChannel, sourceType + ":" + sourcePort).equals("200")) {
+                System.out.println("back: " + sourcePort + " in a band!");
+            }
+        } catch (IOException | TimeoutException e) {
+            e.printStackTrace();
+        }
     }
 }

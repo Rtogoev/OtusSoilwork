@@ -8,12 +8,12 @@ public class MessageFromDB implements MyMessage<UserForm> {
     }
 
     @Override
-    public void setValue(UserForm value) {
-        this.value = value;
+    public UserForm getValue() {
+        return value;
     }
 
     @Override
-    public UserForm getValue() {
-        return value;
+    public void setValue(UserForm value) {
+        this.value = value;
     }
 }

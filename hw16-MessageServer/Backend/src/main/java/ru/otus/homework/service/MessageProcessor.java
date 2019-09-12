@@ -1,7 +1,7 @@
 package ru.otus.homework.service;
 
-import ru.otus.homework.model.MyMessage;
+import ru.otus.homework.model.MessageToDB;
 
 public interface MessageProcessor {
-    void process(MyMessage myMessage);
+    void process(MessageToDB messageToDB);
 }
