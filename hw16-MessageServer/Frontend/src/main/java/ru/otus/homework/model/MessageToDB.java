@@ -1,29 +1,18 @@
 package ru.otus.homework.model;
 
-public class MessageToDB implements MyMessage<User> {
+public class MessageToDB implements MyMessage<String> {
     private int sourcePort;
     private Long sourceType;
     private int destinationPort;
     private Long destinationType;
-    private User value;
+    private String value;
 
-    public MessageToDB(int sourcePort, Long sourceType, int destinationPort, Long destinationType, User value) {
+    public MessageToDB(int sourcePort, Long sourceType, int destinationPort, Long destinationType, String value) {
         this.sourcePort = sourcePort;
         this.sourceType = sourceType;
         this.destinationPort = destinationPort;
         this.destinationType = destinationType;
         this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "MessageToDB{" +
-                "sourcePort=" + sourcePort +
-                ", sourceType=" + sourceType +
-                ", destinationPort=" + destinationPort +
-                ", destinationType=" + destinationType +
-                ", value=" + value +
-                '}';
     }
 
     public int getSourcePort() {
@@ -59,12 +48,11 @@ public class MessageToDB implements MyMessage<User> {
     }
 
     @Override
-    public User getValue() {
+    public String getValue() {
         return value;
     }
 
-    @Override
-    public void setValue(User value) {
+    public void setValue(String value) {
         this.value = value;
     }
 }

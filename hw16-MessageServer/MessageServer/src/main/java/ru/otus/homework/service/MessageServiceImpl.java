@@ -20,7 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private final ServerSocketChannelService serverSocketChannelService;
+    private final NetworkService networkService;
     private Map<Long, LinkedBlockingQueue<MyMessage>> queuesMap = new ConcurrentHashMap<>();
     private Map<Long, Set<ServerSocketChannel>> addressMap = new ConcurrentHashMap<>();
     private Gson gson = new Gson();
@@ -31,8 +31,8 @@ public class MessageServiceImpl implements MessageService {
     @Value("${response.break.seconds}")
     private long responseBreakSeconds;
 
-    public MessageServiceImpl(ServerSocketChannelService serverSocketChannelService) {
-        this.serverSocketChannelService = serverSocketChannelService;
+    public MessageServiceImpl(NetworkService networkService) {
+        this.networkService = networkService;
     }
 
     private static void sleep(Long seconds) {
@@ -58,20 +58,20 @@ public class MessageServiceImpl implements MessageService {
                         serverSocket.bind(new InetSocketAddress(messageSystemPort));
                         while (true) {
                             try {
-                                serverSocketChannelService.receive(
+                                networkService.receiveAndAnswer(
                                         serverSocketChannel,
                                         (response) -> {
                                             if (response != null) {
                                                 String[] split = response.split(":");
-//                                            ServerSocketChannel createdServerSocketChannel = serverSocketChannelService
-//                                                    .createServerSocketChannel(
-//                                                            Integer.parseInt(split[1])
-//                                                    );
-//                                            addAddress(
-//                                                    Long.parseLong(split[0]),
-//                                                    createdServerSocketChannel
-//                                            );
-//                                            startMessaging(createdServerSocketChannel);
+                                                ServerSocketChannel createdServerSocketChannel = networkService
+                                                        .createServerSocketChannel(
+                                                                Integer.parseInt(split[1])
+                                                        );
+                                                addAddress(
+                                                        Long.parseLong(split[0]),
+                                                        createdServerSocketChannel
+                                                );
+                                                startMessaging(createdServerSocketChannel);
                                                 return "200";
                                             }
                                             return "400";
@@ -93,19 +93,13 @@ public class MessageServiceImpl implements MessageService {
                 () -> {
                     while (true) {
                         try {
-                            serverSocketChannelService.receive(
-                                    socketForMessaging,
-                                    (response) -> {
-                                        if (response != null) {
-                                            MyMessage message = gson.fromJson(response, MyMessage.class);
-                                            System.out.println("received: " + message);
-                                            addMessageToQueue(message.getDestinationType(), message);
-                                            MyMessage responseMessage = queuesMap.get(message.getSourceType()).take();
-                                            return gson.toJson(responseMessage);
-                                        }
-                                        return "400";
-                                    }
-                            );
+                            String receive = networkService.receive(socketForMessaging);
+                            if (receive != null) {
+                                if (receive.length() != 0) {
+                                    MyMessage message = gson.fromJson(receive, MyMessage.class);
+                                    addMessageToQueue(message.getDestinationType(), message);
+                                }
+                            }
                             sleep(responseBreakSeconds);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -125,8 +119,13 @@ public class MessageServiceImpl implements MessageService {
                     () -> {
                         try {
                             // todo если порт указан, то слать на этот порт
-                            serverSocketChannelService.onlySend(getAddress(type), gson.toJson(queue.take()));
-                        } catch (IOException | InterruptedException e) {
+                            networkService.send(
+                                    getAddress(type),
+                                    gson.toJson(
+                                            queuesMap.get(type)
+                                    )
+                            );
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }

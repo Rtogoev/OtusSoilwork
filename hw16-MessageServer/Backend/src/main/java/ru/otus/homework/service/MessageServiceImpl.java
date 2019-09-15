@@ -73,7 +73,10 @@ public class MessageServiceImpl implements MessageService {
         buffer.flip();
         socketChannel.write(buffer);
         System.out.println("back" + sourcePort + " send: " + request);
+        return receive(socketChannel);
+    }
 
+    public String receive(SocketChannel socketChannel) throws TimeoutException, IOException {
         Selector selector = Selector.open();
         socketChannel.register(selector, SelectionKey.OP_READ);
         for (int i = 0; i < responseBreakCount; i++) {
@@ -119,7 +122,7 @@ public class MessageServiceImpl implements MessageService {
     void init() {
         try {
             connectToMessageSystem();
-//            initiateDataExchange();
+            initiateDataExchange();
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
@@ -127,6 +130,22 @@ public class MessageServiceImpl implements MessageService {
 
     private void initiateDataExchange() throws IOException {
         this.socketChannel = createSocketChanel(sourcePort);
+        ByteBuffer buffer = ByteBuffer.allocate(1000);
+        buffer.put("".getBytes());
+        buffer.flip();
+        socketChannel.write(buffer);
+
+        while (true) {
+            try {
+                processor.process(
+                        gson.fromJson(
+                                receive(socketChannel),
+                                MessageToDB.class)
+                );
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void connectToMessageSystem() throws IOException, TimeoutException {

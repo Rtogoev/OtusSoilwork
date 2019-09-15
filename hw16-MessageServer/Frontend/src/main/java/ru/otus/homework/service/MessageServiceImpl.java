@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.concurrent.TimeoutException;
 
-// todo создавать сокеты на которых будет происходить обмен сообщениями.
 @Service
 public class MessageServiceImpl implements MessageService {
 
@@ -119,7 +118,7 @@ public class MessageServiceImpl implements MessageService {
     void init() {
         try {
             connectToMessageSystem();
-//            initiateDataExchange();
+            initiateDataExchange();
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }

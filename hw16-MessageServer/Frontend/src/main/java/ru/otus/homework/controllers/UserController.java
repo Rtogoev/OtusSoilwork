@@ -1,5 +1,6 @@
 package ru.otus.homework.controllers;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeoutException;
 public class UserController implements MessageProcessor {
     private final MessageService messageService;
     private final SimpMessagingTemplate template;
+    Gson gson = new Gson();
 
     @Value("${source.port}")
     private int sourcePort;
@@ -43,20 +45,23 @@ public class UserController implements MessageProcessor {
                         sourceType,
                         destinationPort,
                         destinationType,
-                        new User(
-                                userForm.getName(),
-                                Integer.parseInt(
-                                        userForm.getAge()
-                                ),
-                                new AddressDataSet(
-                                        userForm.getAddress()
-                                ),
-                                Collections.singleton(
-                                        new PhoneDataSet(
-                                                userForm.getPhone()
+                        "\"" +
+                                gson.toJson(new User(
+                                                userForm.getName(),
+                                                Integer.parseInt(
+                                                        userForm.getAge()
+                                                ),
+                                                new AddressDataSet(
+                                                        userForm.getAddress()
+                                                ),
+                                                Collections.singleton(
+                                                        new PhoneDataSet(
+                                                                userForm.getPhone()
+                                                        )
+                                                )
                                         )
                                 )
-                        )
+                                + "\""
                 )
         );
     }
