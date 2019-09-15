@@ -2,16 +2,14 @@ package ru.otus.homework.service;
 
 import ru.otus.homework.model.MyMessage;
 
-import java.nio.channels.SocketChannel;
+import java.nio.channels.ServerSocketChannel;
 
 
 public interface MessageService {
 
     void addMessageToQueue(Long queueOwnerId, MyMessage message);
 
-    void addSocketChannel(Long address, SocketChannel socketChannel);
+    ServerSocketChannel getAddress(long type);
 
-    Long getAddress(long type);
-
-    void addAddress(long type, Long frontAddress);
+    void addAddress(long type, ServerSocketChannel socketChannel);
 }

@@ -27,13 +27,13 @@ public class MessageServiceImpl implements MessageService {
     private SocketChannel socketChannel;
 
     @Value("${source.port}")
-    private String sourcePort;
+    private int sourcePort;
     @Value("${source.type}")
-    private String sourceType;
-    @Value("${server.port}")
-    private int port;
+    private Long sourceType;
     @Value("${response.break.count}")
     private int responseBreakCount;
+    @Value("${message.system.port}")
+    private int messageSystemPort;
     @Value("${response.break.seconds}")
     private long responseBreakSeconds;
 
@@ -50,7 +50,7 @@ public class MessageServiceImpl implements MessageService {
         try {
             processor.process(
                     gson.fromJson(
-                            send(
+                            request(
                                     socketChannel,
                                     gson.toJson(message)
                             ),
@@ -67,17 +67,18 @@ public class MessageServiceImpl implements MessageService {
         this.processor = processor;
     }
 
-    private String send(SocketChannel socketChannel, String request) throws IOException, TimeoutException {
+    private String request(SocketChannel socketChannel, String request) throws IOException, TimeoutException {
         ByteBuffer buffer = ByteBuffer.allocate(1000);
         buffer.put(request.getBytes());
         buffer.flip();
         socketChannel.write(buffer);
+        System.out.println("back" + sourcePort + " send: " + request);
 
         Selector selector = Selector.open();
         socketChannel.register(selector, SelectionKey.OP_READ);
         for (int i = 0; i < responseBreakCount; i++) {
             try {
-                if (selector.select() > 0) { //This method performs a blocking
+                if (selector.select() > 0) {
                     String response = processServerResponse(selector);
                     if (response != null) {
                         return response;
@@ -103,6 +104,7 @@ public class MessageServiceImpl implements MessageService {
                 if (count > 0) {
                     buffer.flip();
                     String response = StandardCharsets.UTF_8.decode(buffer).toString();
+                    System.out.println("back" + sourcePort + " received: " + response);
                     buffer.clear();
                     buffer.flip();
                     return response;
@@ -115,15 +117,51 @@ public class MessageServiceImpl implements MessageService {
 
     @PostConstruct
     void init() {
-        try (SocketChannel socketChannel = SocketChannel.open()) {
-            socketChannel.configureBlocking(false);
-            this.socketChannel = socketChannel;
-            socketChannel.connect(new InetSocketAddress("localhost", 8081));
-            if (send(socketChannel, sourceType + ":" + sourcePort).equals("200")) {
-                System.out.println("back: " + sourcePort + " in a band!");
-            }
+        try {
+            connectToMessageSystem();
+//            initiateDataExchange();
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
+    }
+
+    private void initiateDataExchange() throws IOException {
+        this.socketChannel = createSocketChanel(sourcePort);
+    }
+
+    private void connectToMessageSystem() throws IOException, TimeoutException {
+        String response = request(
+                createInitialSocket(),
+                sourceType + ":" + sourcePort
+        );
+        while (!response.equals("200")) {
+            response = request(
+                    createInitialSocket(),
+                    sourceType + ":" + sourcePort
+            );
+        }
+        System.out.println("back: " + sourcePort + " in a band!");
+    }
+
+    private SocketChannel createInitialSocket() throws IOException {
+        return createSocketChanel(messageSystemPort);
+    }
+
+    private SocketChannel createSocketChanel(int port) throws IOException {
+        SocketChannel socketChannel = SocketChannel.open();
+        socketChannel.configureBlocking(false);
+        socketChannel.connect(new InetSocketAddress("localhost", port));
+        for (int i = 0; i < responseBreakCount; i++) {
+            try {
+                while (!socketChannel.finishConnect()) {
+                    System.out.println("connection established");
+                    sleep(responseBreakSeconds);
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                sleep(responseBreakSeconds);
+            }
+        }
+        return socketChannel;
     }
 }

@@ -18,13 +18,13 @@ public class UserController implements MessageProcessor {
     private final SimpMessagingTemplate template;
 
     @Value("${source.port}")
-    private String sourcePort;
+    private int sourcePort;
     @Value("${source.type}")
-    private String sourceType;
+    private Long sourceType;
     @Value("${destination.port}")
-    private String destinationPort;
+    private int destinationPort;
     @Value("${destination.type}")
-    private String destinationType;
+    private Long destinationType;
 
     public UserController(
             MessageService messageService,

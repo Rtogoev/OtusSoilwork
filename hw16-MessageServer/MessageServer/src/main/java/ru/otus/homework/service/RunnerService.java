@@ -22,7 +22,7 @@ public class RunnerService {
                             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                             String line = reader.readLine();
                             while ((line != null)) {
-                                System.out.println(line);
+                                System.out.println("Runner service: " + line);
 
                                 line = reader.readLine();
                             }

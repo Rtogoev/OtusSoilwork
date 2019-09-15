@@ -10,45 +10,29 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-
-// запустились, фронты и бэки на разных портах, значит каждому свой сокет, вот
-// тогда должен быть управляютй порт, который знают все участники сети. Вот через него они и добавляют пару тип:порт.
-// в сообщении указан тип назначения и порт отправки, следовательно при обработке сообщения, создается ответное и
-// указывается тип получаетля, а затем из очереди по данному типу выбирается конкретный клиент.
-// Если указан порт назначения, то отправлять по порту!
-// На управляюй порт сообщения только приходят. Тогда, как только сообщение пришло, вместе с очередью создается и сокет
-
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private final MessageProcessor processor;
+    private final ServerSocketChannelService serverSocketChannelService;
     private Map<Long, LinkedBlockingQueue<MyMessage>> queuesMap = new ConcurrentHashMap<>();
-    private Map<Long, SocketChannel> longSocketChannelMap = new ConcurrentHashMap<>();
-    private Map<Long, Set<Long>> addressMap = new ConcurrentHashMap<>();
+    private Map<Long, Set<ServerSocketChannel>> addressMap = new ConcurrentHashMap<>();
     private Gson gson = new Gson();
     @Value("${message.system.port}")
-    private String messageSystemPort;
-
+    private int messageSystemPort;
     @Value("${response.break.count}")
     private int responseBreakCount;
     @Value("${response.break.seconds}")
     private long responseBreakSeconds;
 
-    public MessageServiceImpl(MessageProcessor processor) {
-        this.processor = processor;
+    public MessageServiceImpl(ServerSocketChannelService serverSocketChannelService) {
+        this.serverSocketChannelService = serverSocketChannelService;
     }
 
     private static void sleep(Long seconds) {
@@ -61,158 +45,133 @@ public class MessageServiceImpl implements MessageService {
 
     @PostConstruct
     void init() {
+        startDataFlow();
+    }
+
+    private void startDataFlow() {
+        new Thread(
+                () -> {
+                    try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
+                        serverSocketChannel.configureBlocking(false);
+
+                        ServerSocket serverSocket = serverSocketChannel.socket();
+                        serverSocket.bind(new InetSocketAddress(messageSystemPort));
+                        while (true) {
+                            try {
+                                serverSocketChannelService.receive(
+                                        serverSocketChannel,
+                                        (response) -> {
+                                            if (response != null) {
+                                                String[] split = response.split(":");
+//                                            ServerSocketChannel createdServerSocketChannel = serverSocketChannelService
+//                                                    .createServerSocketChannel(
+//                                                            Integer.parseInt(split[1])
+//                                                    );
+//                                            addAddress(
+//                                                    Long.parseLong(split[0]),
+//                                                    createdServerSocketChannel
+//                                            );
+//                                            startMessaging(createdServerSocketChannel);
+                                                return "200";
+                                            }
+                                            return "400";
+                                        }
+                                );
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+        ).start();
+    }
+
+    private void startMessaging(ServerSocketChannel socketForMessaging) {
         new Thread(
                 () -> {
                     while (true) {
-                        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
-                            serverSocketChannel.configureBlocking(false);
-
-                            ServerSocket serverSocket = serverSocketChannel.socket();
-                            serverSocket.bind(new InetSocketAddress(Integer.parseInt(messageSystemPort)));
-
-                            try (Selector selector = Selector.open()) {
-                                serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-
-                                while (!Thread.currentThread().isInterrupted()) {
-                                    if (selector.select() > 0) { //This method performs a blocking
-                                        String response = performIO(selector);
+                        try {
+                            serverSocketChannelService.receive(
+                                    socketForMessaging,
+                                    (response) -> {
                                         if (response != null) {
-                                            String[] split = response.split(":");
-                                            addSocketChannel(Long.valueOf(split[0]), createSocketChanel(split[1]));
+                                            MyMessage message = gson.fromJson(response, MyMessage.class);
+                                            System.out.println("received: " + message);
+                                            addMessageToQueue(message.getDestinationType(), message);
+                                            MyMessage responseMessage = queuesMap.get(message.getSourceType()).take();
+                                            return gson.toJson(responseMessage);
                                         }
+                                        return "400";
                                     }
-
-                                }
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            );
                             sleep(responseBreakSeconds);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 }
         ).start();
     }
 
-    private SocketChannel createSocketChanel(String s) {
-        return null;
-    }
-
     @Override
-    public void addMessageToQueue(Long queueOwnerAddress, MyMessage message) {
-        if (!queuesMap.containsKey(queueOwnerAddress)) {
+    public void addMessageToQueue(Long type, MyMessage message) {
+        if (!queuesMap.containsKey(type)) {
             LinkedBlockingQueue<MyMessage> queue = new LinkedBlockingQueue<>();
             queue.add(message);
-            queuesMap.put(queueOwnerAddress, queue);
+            queuesMap.put(type, queue);
             new Thread(
                     () -> {
                         try {
-                            System.out.println("Создан поток");
-                            while (true) {
-                                processor.process(
-                                        longSocketChannelMap.get(queueOwnerAddress),
-                                        queue.take()
-                                );
-                            }
-                        } catch (Exception e) {
+                            // todo если порт указан, то слать на этот порт
+                            serverSocketChannelService.onlySend(getAddress(type), gson.toJson(queue.take()));
+                        } catch (IOException | InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
             ).start();
             return;
         }
-        queuesMap.get(queueOwnerAddress).add(message);
+        queuesMap.get(type).add(message);
     }
 
     @Override
-    public void addSocketChannel(Long address, SocketChannel socketChannel) {
-        longSocketChannelMap.put(
-                address,
-                socketChannel
-        );
-
-    }
-
-    @Override
-    public Long getAddress(long type) {
+    public ServerSocketChannel getAddress(long type) {
         return getRandomElement(addressMap.get(type));
     }
 
     @Override
-    public void addAddress(long type, Long address) {
+    public void addAddress(long type, ServerSocketChannel socketChannel) {
         if (!addressMap.containsKey(type)) {
-            Set<Long> addressSet = new HashSet<>();
-            addressSet.add(address);
+            Set<ServerSocketChannel> addressSet = new HashSet<>();
+            addressSet.add(socketChannel);
             addressMap.put(type, addressSet);
             return;
         }
-        addressMap.get(type).add(address);
+        addressMap.get(type).add(socketChannel);
     }
 
-    private Long getRandomElement(Set<Long> LongSet) {
-        if (LongSet == null) {
+    private ServerSocketChannel getRandomElement(Set<ServerSocketChannel> addressSet) {
+        if (addressSet == null) {
             return null;
         }
-        if (LongSet.size() == 0) {
+        if (addressSet.size() == 0) {
             return null;
         }
 
-        int resultIndex = generateIndex(LongSet.size());
+        int resultIndex = generateIndex(addressSet.size());
 
         int currentIndex = 0;
-        Long resultAddress = null;
-        for (Long address : LongSet) {
+        ServerSocketChannel resultServerSocketChannel = null;
+        for (ServerSocketChannel serverSocketChannel : addressSet) {
             if (resultIndex == currentIndex) {
-                resultAddress = address;
+                resultServerSocketChannel = serverSocketChannel;
                 break;
             }
             currentIndex++;
         }
-        return resultAddress;
-    }
-
-    private String performIO(Selector selector) throws IOException {
-        Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
-
-        while (keys.hasNext()) {
-            SelectionKey key = keys.next();
-            if (key.isAcceptable()) {
-                acceptConnection(key, selector);
-            } else if (key.isReadable()) {
-                return readWriteClient(key);
-            }
-
-            keys.remove();
-        }
-        return null;
-    }
-
-    private void acceptConnection(SelectionKey key, Selector selector) throws IOException {
-        ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
-        SocketChannel socketChannel = serverSocketChannel.accept(); //The socket channel for the new connection
-
-        socketChannel.configureBlocking(false);
-        socketChannel.register(selector, SelectionKey.OP_READ);
-    }
-
-    private String readWriteClient(SelectionKey selectionKey) throws IOException {
-        SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-
-        ByteBuffer buffer = ByteBuffer.allocate(5);
-        StringBuilder inputBuffer = new StringBuilder(100);
-
-        while (socketChannel.read(buffer) > 0) {
-            buffer.flip();
-            String input = StandardCharsets.UTF_8.decode(buffer).toString();
-
-            buffer.flip();
-            buffer.clear();
-            inputBuffer.append(input);
-        }
-
-        String requestFromClient = inputBuffer.toString();
-
-        System.out.println("Server received: " + requestFromClient);
-        return requestFromClient;
+        return resultServerSocketChannel;
     }
 
     private int generateIndex(int size) {

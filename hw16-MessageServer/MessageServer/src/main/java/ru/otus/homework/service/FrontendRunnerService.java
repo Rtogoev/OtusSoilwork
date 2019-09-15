@@ -10,8 +10,8 @@ import java.io.IOException;
 public class FrontendRunnerService {
     private static final String FRONTEND_RUN_COMMAND = "java -jar hw16-MessageServer/Frontend/target/Frontend-1.0-SNAPSHOT.jar ";
     private final RunnerService runnerService;
-    @Value("${frontend.instanse.count}")
-    private int frontendInstanseCount;
+    @Value("${frontend.instance.count}")
+    private int frontendInstanceCount;
 
     public FrontendRunnerService(RunnerService runnerService) {
         this.runnerService = runnerService;
@@ -19,6 +19,6 @@ public class FrontendRunnerService {
 
     @PostConstruct
     void init() throws IOException, InterruptedException {
-        runnerService.run(FRONTEND_RUN_COMMAND, frontendInstanseCount);
+        runnerService.run(FRONTEND_RUN_COMMAND, frontendInstanceCount);
     }
 }

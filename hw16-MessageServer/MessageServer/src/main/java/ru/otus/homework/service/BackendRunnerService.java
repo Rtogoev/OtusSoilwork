@@ -11,8 +11,8 @@ public class BackendRunnerService {
 
     private static final String BACKEND_RUN_COMMAND = "java -jar hw16-MessageServer/Backend/target/Backend-1.0-SNAPSHOT.jar";
     private final RunnerService runnerService;
-    @Value("${backend.instanse.count}")
-    private int backendInstanseCount;
+    @Value("${backend.instance.count}")
+    private int backendInstanceCount;
 
     public BackendRunnerService(RunnerService runnerService) {
         this.runnerService = runnerService;
@@ -20,6 +20,6 @@ public class BackendRunnerService {
 
     @PostConstruct
     void init() throws IOException, InterruptedException {
-        runnerService.run(BACKEND_RUN_COMMAND, backendInstanseCount);
+        runnerService.run(BACKEND_RUN_COMMAND, backendInstanceCount);
     }
 }
