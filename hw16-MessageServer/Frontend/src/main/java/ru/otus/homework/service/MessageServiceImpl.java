@@ -5,7 +5,8 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.model.MessageFromDB;
-import ru.otus.homework.model.MyMessage;
+import ru.otus.homework.model.MessageToDB;
+import ru.otus.homework.model.User;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -35,6 +36,10 @@ public class MessageServiceImpl implements MessageService {
     private int messageSystemPort;
     @Value("${response.break.seconds}")
     private long responseBreakSeconds;
+    @Value("${destination.port}")
+    private int destinationPort;
+    @Value("${destination.type}")
+    private Long destinationType;
 
     private static void sleep(Long seconds) {
         try {
@@ -45,13 +50,21 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void addMessageToQueue(MyMessage message) {
+    public void addMessageToQueue(User value) {
         try {
             processor.process(
                     gson.fromJson(
                             request(
                                     socketChannel,
-                                    gson.toJson(message)
+                                    gson.toJson(
+                                            new MessageToDB(
+                                                    sourcePort,
+                                                    sourceType,
+                                                    destinationPort,
+                                                    destinationType,
+                                                    value
+                                            )
+                                    )
                             ),
                             MessageFromDB.class
                     )

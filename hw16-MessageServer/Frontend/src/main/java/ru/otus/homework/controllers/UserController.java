@@ -1,7 +1,6 @@
 package ru.otus.homework.controllers;
 
 import com.google.gson.Gson;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -19,15 +18,6 @@ public class UserController implements MessageProcessor {
     private final SimpMessagingTemplate template;
     Gson gson = new Gson();
 
-    @Value("${source.port}")
-    private int sourcePort;
-    @Value("${source.type}")
-    private Long sourceType;
-    @Value("${destination.port}")
-    private int destinationPort;
-    @Value("${destination.type}")
-    private Long destinationType;
-
     public UserController(
             MessageService messageService,
             SimpMessagingTemplate template
@@ -40,29 +30,20 @@ public class UserController implements MessageProcessor {
     @MessageMapping("/create")
     public void createUser(UserForm userForm) throws IOException, TimeoutException {
         messageService.addMessageToQueue(
-                new MessageToDB(
-                        sourcePort,
-                        sourceType,
-                        destinationPort,
-                        destinationType,
-                        "\"" +
-                                gson.toJson(new User(
-                                                userForm.getName(),
-                                                Integer.parseInt(
-                                                        userForm.getAge()
-                                                ),
-                                                new AddressDataSet(
-                                                        userForm.getAddress()
-                                                ),
-                                                Collections.singleton(
-                                                        new PhoneDataSet(
-                                                                userForm.getPhone()
-                                                        )
-                                                )
+                        new User(
+                                userForm.getName(),
+                                Integer.parseInt(
+                                        userForm.getAge()
+                                ),
+                                new AddressDataSet(
+                                        userForm.getAddress()
+                                ),
+                                Collections.singleton(
+                                        new PhoneDataSet(
+                                                userForm.getPhone()
                                         )
                                 )
-                                + "\""
-                )
+                        )
         );
     }
 
