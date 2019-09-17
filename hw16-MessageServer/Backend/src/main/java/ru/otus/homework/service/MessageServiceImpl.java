@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.concurrent.TimeoutException;
 
-// todo создавать сокеты на которых будет происходить обмен сообщениями.
 @Service
 public class MessageServiceImpl implements MessageService {
 
@@ -68,12 +67,16 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private String request(SocketChannel socketChannel, String request) throws IOException, TimeoutException {
+        send(socketChannel, request);
+        return receive(socketChannel);
+    }
+
+    private void send(SocketChannel socketChannel, String request) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(1000);
         buffer.put(request.getBytes());
         buffer.flip();
         socketChannel.write(buffer);
         System.out.println("back" + sourcePort + " send: " + request);
-        return receive(socketChannel);
     }
 
     public String receive(SocketChannel socketChannel) throws TimeoutException, IOException {
@@ -130,10 +133,6 @@ public class MessageServiceImpl implements MessageService {
 
     private void initiateDataExchange() throws IOException {
         this.socketChannel = createSocketChanel(sourcePort);
-        ByteBuffer buffer = ByteBuffer.allocate(1000);
-        buffer.put("".getBytes());
-        buffer.flip();
-        socketChannel.write(buffer);
 
         while (true) {
             try {
