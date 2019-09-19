@@ -4,12 +4,14 @@ package ru.otus.homework.service;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.otus.homework.model.Connection;
 import ru.otus.homework.model.MyMessage;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,7 +24,7 @@ public class MessageServiceImpl implements MessageService {
 
     private final NetworkService networkService;
     private Map<Long, LinkedBlockingQueue<MyMessage>> queuesMap = new ConcurrentHashMap<>();
-    private Map<Long, Set<ServerSocketChannel>> addressMap = new ConcurrentHashMap<>();
+    private Map<Long, Set<Connection>> addressMap = new ConcurrentHashMap<>();
     private Gson gson = new Gson();
     @Value("${message.system.port}")
     private int messageSystemPort;
@@ -39,7 +41,7 @@ public class MessageServiceImpl implements MessageService {
         try {
             Thread.sleep(seconds * 1000);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            e.printStackTrace();
         }
     }
 
@@ -63,15 +65,10 @@ public class MessageServiceImpl implements MessageService {
                                         (response) -> {
                                             if (response != null) {
                                                 String[] split = response.split(":");
-                                                ServerSocketChannel createdServerSocketChannel = networkService
-                                                        .createServerSocketChannel(
-                                                                Integer.parseInt(split[1])
-                                                        );
-                                                addAddress(
-                                                        Long.parseLong(split[0]),
-                                                        createdServerSocketChannel
+                                                startAcceptConnections(
+                                                        Integer.parseInt(split[0]),
+                                                        Integer.parseInt(split[1])
                                                 );
-                                                startMessaging(createdServerSocketChannel);
                                                 return "200";
                                             }
                                             return "400";
@@ -88,22 +85,36 @@ public class MessageServiceImpl implements MessageService {
         ).start();
     }
 
-    private void startMessaging(ServerSocketChannel socketForMessaging) {
+    private void startAcceptConnections(int type, int port) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(port);
         new Thread(
                 () -> {
                     while (true) {
                         try {
-                            String receive = networkService.receive(socketForMessaging);
-                            if (receive != null) {
-                                if (receive.length() != 0) {
-                                    MyMessage message = gson.fromJson(receive, MyMessage.class);
-                                    addMessageToQueue(message.getDestinationType(), message);
-                                }
-                            }
-                            sleep(responseBreakSeconds);
+                            Socket clientSocket = serverSocket.accept();
+                            Connection connection = new Connection(clientSocket);
+                            addAddress(type, connection);
+                            startMessaging(connection);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        ).start();
+    }
+
+    private void startMessaging(Connection connection) {
+        new Thread(
+                () -> {
+                    while (true) {
+                        try {
+                            String receive = networkService.receive(connection);
+                            MyMessage message = gson.fromJson(receive, MyMessage.class);
+                            addMessageToQueue(message.getDestinationType(), message);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        sleep(responseBreakSeconds);
                     }
                 }
         ).start();
@@ -122,10 +133,10 @@ public class MessageServiceImpl implements MessageService {
                             networkService.send(
                                     getAddress(type),
                                     gson.toJson(
-                                            queuesMap.get(type)
+                                            queuesMap.get(type).take()
                                     )
                             );
-                        } catch (IOException e) {
+                        } catch (IOException | InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
@@ -136,41 +147,41 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public ServerSocketChannel getAddress(long type) {
+    public Connection getAddress(long type) {
         return getRandomElement(addressMap.get(type));
     }
 
     @Override
-    public void addAddress(long type, ServerSocketChannel socketChannel) {
+    public void addAddress(long type, Connection connection) {
         if (!addressMap.containsKey(type)) {
-            Set<ServerSocketChannel> addressSet = new HashSet<>();
-            addressSet.add(socketChannel);
-            addressMap.put(type, addressSet);
+            Set<Connection> connectionSet = new HashSet<>();
+            connectionSet.add(connection);
+            addressMap.put(type, connectionSet);
             return;
         }
-        addressMap.get(type).add(socketChannel);
+        addressMap.get(type).add(connection);
     }
 
-    private ServerSocketChannel getRandomElement(Set<ServerSocketChannel> addressSet) {
-        if (addressSet == null) {
+    private Connection getRandomElement(Set<Connection> connectionSet) {
+        if (connectionSet == null) {
             return null;
         }
-        if (addressSet.size() == 0) {
+        if (connectionSet.size() == 0) {
             return null;
         }
 
-        int resultIndex = generateIndex(addressSet.size());
+        int resultIndex = generateIndex(connectionSet.size());
 
         int currentIndex = 0;
-        ServerSocketChannel resultServerSocketChannel = null;
-        for (ServerSocketChannel serverSocketChannel : addressSet) {
+        Connection resultConnection = null;
+        for (Connection connection : connectionSet) {
             if (resultIndex == currentIndex) {
-                resultServerSocketChannel = serverSocketChannel;
+                resultConnection = connection;
                 break;
             }
             currentIndex++;
         }
-        return resultServerSocketChannel;
+        return resultConnection;
     }
 
     private int generateIndex(int size) {

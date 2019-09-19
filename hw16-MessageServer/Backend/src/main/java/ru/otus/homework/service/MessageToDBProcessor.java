@@ -2,10 +2,13 @@ package ru.otus.homework.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.otus.homework.model.*;
+import ru.otus.homework.model.MessageFromDB;
+import ru.otus.homework.model.MessageToDB;
+import ru.otus.homework.model.User;
+import ru.otus.homework.model.UserForm;
 
 import javax.annotation.PostConstruct;
-import java.sql.SQLException;
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -36,17 +39,17 @@ public class MessageToDBProcessor implements MessageProcessor {
     }
 
     @Override
-    public void process(MessageToDB messageToDB) {
+    public void process(MessageToDB messageToDB) throws IOException {
         User user = messageToDB.getValue();
-        try {
-            userService.create(user);
-        } catch (SQLException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        StringBuilder phone = new StringBuilder();
-        for (PhoneDataSet phoneDataSet : user.getPhoneDataSet()) {
-            phone.append(phoneDataSet.getNumber());
-        }
+//        try {
+//            userService.create(user);
+//        } catch (SQLException | IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+//        StringBuilder phone = new StringBuilder();
+//        for (PhoneDataSet phoneDataSet : user.getPhoneDataSet()) {
+//            phone.append(phoneDataSet.getNumber());
+//        }
         messageService.addMessageToQueue(
                 new MessageFromDB(
                         sourcePort,
@@ -58,7 +61,8 @@ public class MessageToDBProcessor implements MessageProcessor {
                                 user.getName(),
                                 String.valueOf(user.getAge()),
                                 user.getAddressDataSet().getStreet(),
-                                phone.toString()
+//                                phone.toString()
+                                "phone"
                         )
                 )
         );

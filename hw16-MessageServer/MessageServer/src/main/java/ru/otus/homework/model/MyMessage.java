@@ -5,25 +5,15 @@ public class MyMessage {
     private Long sourceType;
     private int destinationPort;
     private Long destinationType;
-    private String value;
+    //    private JsonObject value;
+    private Object value;
 
-    public MyMessage(int sourcePort, Long sourceType, int destinationPort, Long destinationType, String value) {
+    public MyMessage(int sourcePort, Long sourceType, int destinationPort, Long destinationType, Object value) {
         this.sourcePort = sourcePort;
         this.sourceType = sourceType;
         this.destinationPort = destinationPort;
         this.destinationType = destinationType;
         this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "MyMessage{" +
-                "sourcePort=" + sourcePort +
-                ", sourceType=" + sourceType +
-                ", destinationPort=" + destinationPort +
-                ", destinationType=" + destinationType +
-                ", value='" + value + '\'' +
-                '}';
     }
 
     public int getSourcePort() {
@@ -58,11 +48,11 @@ public class MyMessage {
         this.destinationType = destinationType;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 }
