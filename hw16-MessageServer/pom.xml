@@ -11,8 +11,8 @@
     </parent>
     <modules>
         <module>Backend</module>
-        <module>Frontend</module>
-        <module>MessageServer</module>
+<!--        <module>Frontend</module>-->
+<!--        <module>MessageServer</module>-->
     </modules>
     <properties>
         <spring.version>5.1.5.RELEASE</spring.version>

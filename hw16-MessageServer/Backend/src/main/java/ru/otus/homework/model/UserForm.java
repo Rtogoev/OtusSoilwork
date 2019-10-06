@@ -1,16 +1,13 @@
 package ru.otus.homework.model;
 
 public class UserForm {
-    private String id;
+    private Long id;
     private String name;
-    private String age;
+    private int age;
     private String address;
     private String phone;
 
-    public UserForm() {
-    }
-
-    public UserForm(String id, String name, String age, String address, String phone) {
+    public UserForm(Long id, String name, int age, String address, String phone) {
         this.id = id;
         this.name = name;
         this.age = age;
@@ -18,11 +15,22 @@ public class UserForm {
         this.phone = phone;
     }
 
-    public String getId() {
+    @Override
+    public String toString() {
+        return "UserForm{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -34,11 +42,11 @@ public class UserForm {
         this.name = name;
     }
 
-    public String getAge() {
+    public int getAge() {
         return age;
     }
 
-    public void setAge(String age) {
+    public void setAge(int age) {
         this.age = age;
     }
 
@@ -56,16 +64,5 @@ public class UserForm {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    @Override
-    public String toString() {
-        return "UserForm{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", age='" + age + '\'' +
-                ", address='" + address + '\'' +
-                ", phone='" + phone + '\'' +
-                '}';
     }
 }

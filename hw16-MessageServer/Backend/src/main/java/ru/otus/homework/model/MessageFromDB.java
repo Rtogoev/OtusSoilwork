@@ -1,13 +1,13 @@
 package ru.otus.homework.model;
 
 public class MessageFromDB implements MyMessage<UserForm> {
-    private String sourcePort;
-    private String sourceType;
-    private String destinationPort;
-    private String destinationType;
+    private int sourcePort;
+    private int sourceType;
+    private int destinationPort;
+    private int destinationType;
     private UserForm value;
 
-    public MessageFromDB(String sourcePort, String sourceType, String destinationPort, String destinationType, UserForm value) {
+    public MessageFromDB(int sourcePort, int sourceType, int destinationPort, int destinationType, UserForm value) {
         this.sourcePort = sourcePort;
         this.sourceType = sourceType;
         this.destinationPort = destinationPort;
@@ -15,35 +15,46 @@ public class MessageFromDB implements MyMessage<UserForm> {
         this.value = value;
     }
 
-    public String getSourcePort() {
+    @Override
+    public String toString() {
+        return "MessageFromDB{" +
+                "sourcePort=" + sourcePort +
+                ", sourceType=" + sourceType +
+                ", destinationPort=" + destinationPort +
+                ", destinationType=" + destinationType +
+                ", value=" + value +
+                '}';
+    }
+
+    public int getSourcePort() {
         return sourcePort;
     }
 
-    public void setSourcePort(String sourcePort) {
+    public void setSourcePort(int sourcePort) {
         this.sourcePort = sourcePort;
     }
 
-    public String getSourceType() {
+    public int getSourceType() {
         return sourceType;
     }
 
-    public void setSourceType(String sourceType) {
+    public void setSourceType(int sourceType) {
         this.sourceType = sourceType;
     }
 
-    public String getDestinationPort() {
+    public int getDestinationPort() {
         return destinationPort;
     }
 
-    public void setDestinationPort(String destinationPort) {
+    public void setDestinationPort(int destinationPort) {
         this.destinationPort = destinationPort;
     }
 
-    public String getDestinationType() {
+    public int getDestinationType() {
         return destinationType;
     }
 
-    public void setDestinationType(String destinationType) {
+    public void setDestinationType(int destinationType) {
         this.destinationType = destinationType;
     }
 
@@ -55,16 +66,5 @@ public class MessageFromDB implements MyMessage<UserForm> {
     @Override
     public void setValue(UserForm value) {
         this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "MessageFromDB{" +
-                "sourcePort='" + sourcePort + '\'' +
-                ", sourceType='" + sourceType + '\'' +
-                ", destinationPort='" + destinationPort + '\'' +
-                ", destinationType='" + destinationType + '\'' +
-                ", value=" + value +
-                '}';
     }
 }

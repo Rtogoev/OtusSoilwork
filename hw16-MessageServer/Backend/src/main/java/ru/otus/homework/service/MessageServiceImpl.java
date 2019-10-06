@@ -23,12 +23,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void addMessageToQueue(MyMessage message) throws IOException {
-//        processor.process(
-//                gson.fromJson(
         networkService.send(gson.toJson(message));
-//                        MessageToDB.class
-//                )
-//        );
     }
 
     @Override
@@ -39,23 +34,26 @@ public class MessageServiceImpl implements MessageService {
     @PostConstruct
     void init() {
         try {
-            networkService.connectToMessageSystem();
-            networkService.initiateDataExchange();
+            networkService.connectToMessageSystemAsync();
             new Thread(
                     () -> {
+                        try {
+                            while (!NetworkService.isMessageExchangeStarted) {
+                                System.out.println("wait for connection");
+                                SleepService.sleep(1L);
+                            }
+                            networkService.initiateDataExchange();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         while (true) {
                             try {
-//                                processor.process(
-//                                        gson.fromJson(
-                                MyMessage myMessage = gson.fromJson(
-                                        networkService.receiveMessage(),
-                                        MessageToDB.class
+                                processor.process(
+                                        gson.fromJson(
+                                                networkService.receiveMessage(),
+                                                MessageToDB.class
+                                        )
                                 );
-                                myMessage.setDestinationType(myMessage.getSourceType());
-                                networkService.send(gson.toJson(myMessage));
-//                                                networkService.receiveMessage(),
-//                                                MessageToDB.class)
-//                                );
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

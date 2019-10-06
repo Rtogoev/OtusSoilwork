@@ -2,35 +2,29 @@ package ru.otus.homework.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.otus.homework.model.MessageFromDB;
-import ru.otus.homework.model.MessageToDB;
-import ru.otus.homework.model.User;
-import ru.otus.homework.model.UserForm;
+import ru.otus.homework.model.*;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.UUID;
+import java.sql.SQLException;
 
 @Service
 public class MessageToDBProcessor implements MessageProcessor {
-    private static UUID address;
     private final MessageService messageService;
+    private final NetworkService networkService;
     private DbService<User, Long> userService;
-
-    @Value("${source.port}")
-    private String sourcePort;
     @Value("${source.type}")
-    private String sourceType;
-    @Value("${destination.port}")
-    private String destinationPort;
-    @Value("${destination.type}")
-    private String destinationType;
+    private int sourceType;
 
 
-    public MessageToDBProcessor(MessageService messageService, DbService<User, Long> userService) {
+    public MessageToDBProcessor(
+            MessageService messageService,
+            DbService<User, Long> userService,
+            NetworkService networkService
+    ) {
         this.messageService = messageService;
         this.userService = userService;
-        address = UUID.randomUUID();
+        this.networkService = networkService;
     }
 
     @PostConstruct
@@ -41,28 +35,27 @@ public class MessageToDBProcessor implements MessageProcessor {
     @Override
     public void process(MessageToDB messageToDB) throws IOException {
         User user = messageToDB.getValue();
-//        try {
-//            userService.create(user);
-//        } catch (SQLException | IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-//        StringBuilder phone = new StringBuilder();
-//        for (PhoneDataSet phoneDataSet : user.getPhoneDataSet()) {
-//            phone.append(phoneDataSet.getNumber());
-//        }
+        try {
+            userService.create(user);
+        } catch (SQLException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        StringBuilder phone = new StringBuilder();
+        for (PhoneDataSet phoneDataSet : user.getPhoneDataSet()) {
+            phone.append(phoneDataSet.getNumber());
+        }
         messageService.addMessageToQueue(
                 new MessageFromDB(
-                        sourcePort,
+                        networkService.getSourcePort(),
                         sourceType,
                         messageToDB.getDestinationPort(),
                         messageToDB.getDestinationType(),
                         new UserForm(
-                                user.getId().toString(),
+                                user.getId(),
                                 user.getName(),
-                                String.valueOf(user.getAge()),
+                                user.getAge(),
                                 user.getAddressDataSet().getStreet(),
-//                                phone.toString()
-                                "phone"
+                                phone.toString()
                         )
                 )
         );
